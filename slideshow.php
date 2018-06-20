@@ -1,9 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>slideshow</title>
-</head>
-
 <!-- Style the slideshow //////////////////////////////////////// -->
 <style>
 #slideshow{
@@ -27,16 +21,26 @@ $slideshowDirection = 4;
 $slideshowSpeed = 2000;
 // Slideshow picture speed in seconds
 $slideshowPictureSpeed = 0.5;
+// Slideshow picture timing
+// 1 = Linear
+// 2 = Ease
+// 3 = Ease-in
+// 4 = Ease-out
+// 5 = Ease-in-out
+$slideshowPictureTiming = 2;
 // ////////////////////////////////////////////////////////////// -->
 
 if(empty($slideshowPictures)) {
 	$slideshowPictures = array(1=>'https://via.placeholder.com/350x150');
 }
-if(empty($slideshowSpeed)) {
+if(empty($slideshowSpeed) || !is_int($slideshowSpeed)) {
 	$slideshowSpeed = 2000;
 }
-if(empty($slideshowPictureSpeed)) {
+if(empty($slideshowPictureSpeed) || !is_int($slideshowPictureSpeed)) {
 	$slideshowPictureSpeed = 0.5;
+}
+if(empty($slideshowPictureTiming) || !is_int($slideshowPictureTiming)) {
+	$slideshowPictureTiming = 2;
 }
 $slideshowTotalPictures = count($slideshowPictures);
 ?>
@@ -57,6 +61,10 @@ $slideshowTotalPictures = count($slideshowPictures);
 	min-width: 100%;
 	height: 100%;
 	min-height: 100%;
+	padding: 0;
+	margin: 0;
+	transition: all <?= $slideshowPictureSpeed; ?>s;
+	-webkit-transition: all <?= $slideshowPictureSpeed; ?>s;
 	<?php
 	if($slideshowDirection == 1) {
 		echo 'left: 0;';
@@ -65,11 +73,20 @@ $slideshowTotalPictures = count($slideshowPictures);
 	} elseif($slideshowDirection == 3) {
 		echo 'top: 0;';
 	} else {
-		echo 'top: calc(-'.(100 * (count($slideshowPictures) - 1)).'% - '.((count($slideshowPictures) - 1) * 4).'px);';
+		echo 'top: -'.(100 * (count($slideshowPictures) - 1)).'%;';
+	}
+	if($slideshowPictureTiming == 1) {
+		echo 'transition-timing-function: linear;-webkit-transition-timing-function: linear;';
+	} elseif($slideshowPictureTiming == 2) {
+		echo 'transition-timing-function: ease;-webkit-transition-timing-function: ease;';
+	} elseif($slideshowPictureTiming == 3) {
+		echo 'transition-timing-function: ease-in;-webkit-transition-timing-function: ease-in;';
+	} elseif($slideshowPictureTiming == 4) {
+		echo 'transition-timing-function: ease-out;-webkit-transition-timing-function: ease-out;';
+	} else {
+		echo 'transition-timing-function: ease-in-out;-webkit-transition-timing-function: ease-in-out;';
 	}
 	?>
-	transition: all <?= $slideshowPictureSpeed; ?>s;
-	-webkit-transition: all <?= $slideshowPictureSpeed; ?>s;
 }
 </style>
 <div id="slideshow">
@@ -123,14 +140,20 @@ if($slideshowTotalPictures > 1) {
 				if(slidePict[i]) {
 					<?php
 					if($slideshowDirection == 1) {
-						?>slidePict[i].style.cssText = 'left: -'+(100 * j)+'%;';<?php
+						?>
+						slidePict[i].style.cssText = 'left: -'+(100 * j)+'%;';
+						<?php
 					} elseif($slideshowDirection == 2) {
-						?>slidePict[i].style.cssText = 'left: '+((0 - (Number('<?= $slideshowTotalPictures; ?>') * 100)) + (100 * j))+'%;';<?php
+						?>
+						slidePict[i].style.cssText = 'left: '+((0 - (Number('<?= $slideshowTotalPictures; ?>') * 100)) + (100 * j))+'%;';
+						<?php
 					} elseif($slideshowDirection == 3) {
-						?>slidePict[i].style.cssText = 'top: calc(-'+(100 * j)+'% - '+(Number('<?= ($slideshowTotalPictures - 1); ?>') * j)+'px);';<?php
+						?>
+						slidePict[i].style.cssText = 'top: -'+(100 * j)+'%;';
+						<?php
 					} else {
 						?>
-						slidePict[i].style.cssText = 'top: calc('+((0 - (Number('<?= $slideshowTotalPictures; ?>') * 100)) + (100 * j))+'% - '+((3 * l) + ((i * 1) - 2))+'px);';
+						slidePict[i].style.cssText = 'top: '+((0 - (Number('<?= $slideshowTotalPictures; ?>') * 100)) + (100 * j))+'%;';
 						<?php
 					}
 					?>
@@ -146,5 +169,3 @@ if($slideshowTotalPictures > 1) {
 	<?php
 }
 ?>
-</body>
-</html>
