@@ -1,0 +1,189 @@
+#shoutboxContent{
+	position: absolute;
+	width: 100%;
+	height: 188px;
+	top: 0;
+	left: 0;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	font-size: 15px;
+	border-bottom: 1px solid #405171;
+}
+
+#shoutboxRowNone{
+	color: #A3BFD2;
+	position: absolute;
+	width: 100%;
+	top: calc(50% - 9px);
+	text-align: center;
+	font-size: 18px;
+}
+
+#shoutboxForm{
+	position: absolute;
+	height: calc(100% - 189px);
+	width: 100%;
+	bottom: 0;
+	left: 0;
+	transition: opacity 0.3s;
+}
+
+#shoutboxText{
+	position: absolute;
+	width: calc(100% - 150px);
+	height: 25px;
+	font-size: 17px;
+}
+
+#shoutboxIconsBtn{
+	background-color: #d5d6d8;
+	position: absolute;
+	width: 30px;
+	height: 29px;
+	left: calc(100% - 146px);
+	border: 1px solid #b2b4b7;
+	transition: all 0.3s;
+}
+
+#shoutboxIconsBtn:hover{
+	background-color: #d2cbc1;
+	cursor: pointer;
+}
+
+#shoutboxIconsBtn:hover #shoutboxIconsBtnIcon{
+	color: #bc6000;
+}
+
+#shoutboxIconsBtnIcon{
+	color: #8c4e0c;
+	font-size: 30px;
+	margin-left: 2px;
+	transition: all 0.3s;
+}
+
+#shoutboxIcons{
+	background-color: #6c718e;
+	position: absolute;
+	width: calc(100% - 115px);
+	top: 31px;
+	font-size: 17px;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	overflow: hidden;
+	cursor: pointer;
+	transition: all 0.3s;
+	z-index: 2;
+}
+
+.shoutboxIcon{
+	background-color: #585d7a;
+	position: absolute;
+	width: 30px;
+	height: 30px;
+	text-align: center;
+	border-left: 1px solid #383946;
+	border-right: 1px solid #383946;
+	transition: all 0.3s;
+}
+
+.shoutboxIcon:hover{
+	background-color: #81849b;
+	border-left: 1px solid #2d2e44;
+	border-right: 1px solid #2d2e44;
+}
+
+.shoutRow{
+	padding-top: 2px;
+}
+
+.shoutRowBackground:nth-child(even){
+	background-color: #9DB1DD;
+}
+
+.shoutRowBackground:nth-child(odd){
+	background-color: #A6B0D8;
+}
+
+.shoutboxRowDate{
+	color: #B3B3B3;
+	position: relative;
+	display: inline-block;
+	min-width: 140px;
+}
+
+.shoutboxRowName{
+	color: #7891B5;
+	position: relative;
+	display: inline;
+}
+
+.shoutboxRowText{
+	color: #F4F5F5;
+	position: relative;
+	display: inline;
+}
+
+.shoutboxRowDeleted{
+	color: black;
+	position: relative;
+	display: inline;
+}
+
+.deleteShoutRow{
+	color: #AC1916;
+	position: relative;
+	display: inline;
+	top: 0;
+	left: -2px;
+	font-size: 16px;
+	transition: color 0.3s;
+}
+
+.deleteShoutRow:hover{
+	color: #E7150D;
+	cursor: pointer;
+}
+
+.editShoutRow{
+	color: #188136;
+	position: relative;
+	display: inline;
+	top: 0;
+	left: 0;
+	font-size: 16px;
+	cursor: pointer;
+	transition: color 0.3s;
+}
+
+.editShoutRow:hover{
+	color: #0BAD26;
+}
+
+#shoutboxStopEditing{
+	color: #A30A15;
+	position: absolute;
+	display: none;
+	top: 0px;
+	right: 144px;
+	padding: 3px;
+	padding-right: 6px;
+	cursor: pointer;
+	font-size: 25px;
+	transition: color 0.3s;
+}
+
+#shoutboxStopEditing:hover{
+	color: #D21925;
+}
+
+.editedIcon{
+	color: #A26510;
+	position: relative;
+	display: inline;
+	font-size: 18px;
+	transition: color 0.3s;
+}
+
+.editedIcon:hover{
+	color: #D48611;
+}
