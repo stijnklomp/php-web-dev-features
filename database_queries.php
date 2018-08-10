@@ -63,7 +63,7 @@ class Database
 			{
 				$query .= '(';
 			}
-			if($i != 0)
+			else
 			{
 				$query .= ', ';
 			}
@@ -77,7 +77,7 @@ class Database
 			{
 				$query .= ') VALUES (';
 			}
-			if($i != 0)
+			else
 			{
 				$query .= ', ';
 			}

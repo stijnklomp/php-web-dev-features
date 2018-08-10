@@ -8,7 +8,6 @@
 	border-radius: 10px;
 }
 </style>
-<body>
 <?php
 $slideshowPictures = array(1=>'https://slodive.com/wp-content/uploads/2011/06/vintage-backgrounds/dark-vintage.jpg', 2=>'https://hdbackgroundspot.com//storage/upload/textures-background/textures-background-82.jpg', 3=>'https://cdn-images-1.medium.com/max/1600/0*qYji31AIscjHlk9a.jpg', 4=>'https://cdn.tutsplus.com/psd/uploads/legacy/psdtutsarticles/linkb_40futuristic/15-stars.jpg', 5=>'https://designmodo.com/wp-content/uploads/2011/11/Wood-Textures-2.jpg');
 // Slideshow direction
