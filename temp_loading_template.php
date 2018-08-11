@@ -6,13 +6,13 @@
 </style>
 <?php
 // Total box width in pixels
-$loadingTemplateBoxWidth = 250;
+$loadingTemplateBoxWidth = 150;
 // Total lines
-$loadingTemplateLineQuantity = 105;
+$loadingTemplateLineQuantity = 45;
 // Line height in pixels
 $loadingTemplateLineHeight = 2;
 // Line margin in pixels
-$loadingTemplateLineMargin = 0;
+$loadingTemplateLineMargin = 3;
 // Line animation speed in seconds
 $loadingTemplateLineSpeed = 3;
 // ////////////////////////////////////////////////////////////// -->
@@ -41,7 +41,7 @@ $loadingTemplateLineSpeed = 3;
 <style>
 .temporaryLoadingTemplateLine{
 	position: relative;
-	height: <?= $loadingTemplateLineHeight; ?>;
+	height: <?= $loadingTemplateLineHeight; ?>px;
 	margin-top: <?= $loadingTemplateLineMargin; ?>px;
 	transition: all <?= $loadingTemplateLineSpeed; ?>s;
 	transition-timing-function: ease-in-out;
