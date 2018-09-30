@@ -54,7 +54,7 @@ function convertDate($convertDate, $timePeriod = true)
 					}
 				} else {
 					if($timePeriod) {
-						echo $diff->d.' days ago at'.substr($convertDate, -8, 5);
+						echo $diff->d.' days ago at '.substr($convertDate, -8, 5);
 					} else {
 						echo $diff->d.' days and '.$diff->h.' hour';
 						if($diff->h != 1) {
