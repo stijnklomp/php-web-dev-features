@@ -1,40 +1,35 @@
 <?php
-class Database
+$db2 = new Database();
+final class Database
 {
 	private $host = 'localhost';
-	private $database = 'db_name';
+	private $database = 'test3_images';
 	private $username = 'root';
 	private $pass = '';
 	public $conn;
 
-	public static function instance() {
+	public static function getInstance()
+	{
 		static $inst = null;
 		if($inst === null) {
-			$inst = new UserFactory();
-		}
-		return $inst;
-	}
-
-	private function __construct() {
-		try  {
-			$this->conn = new PDO('mysql:host=localhost;dbname='.$this->database, $this->username, $this->pass);
-			$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$this->conn->prepare('USE '.$this->database)->execute(array());
-		}
-		catch(PDOException $e) {
-			echo 'Connection failed: ' . $e->getMessage();
+			try {
+				$this->conn = new PDO('mysql:host=localhost;dbname='.$this->database, $this->username, $this->pass);
+				$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+				$this->conn->prepare('USE '.$this->database)->execute(array());
+			}
+			catch(PDOException $e) {
+				echo 'Connection failed: ' . $e->getMessage();
+			}
+			return $conn;
+		} else {
+			return $inst;
 		}
 	}
 
 	private function whereQuery($arrayValues) {
-		$parameters = array();
+		$query = '';
 		if(!empty($arrayValues)) {
-			$parameters = array();
 			$query = ' WHERE ';
-			foreach($arrayValues as $key => $value) {
-				$parameters[$key] = $value;
-				$i++;
-			}
 			$i = 0;
 			foreach($arrayValues as $key => $value) {
 				if($i != 0) {
@@ -47,20 +42,31 @@ class Database
 		return $query;
 	}
 
+	private function parametersValues($parameters, $arrayValues) {
+		if(!empty($arrayValues)) {
+			foreach($arrayValues as $key => $value) {
+				$parameters[$key] = $value;
+			}
+		}
+		return $parameters;
+	}
+
 	// Select from database
-	public function selectDatabase($tableName, $arrayValues, $addon) {
-		$sth = $this->conn->prepare('SELECT * FROM '.$tableName.$this->whereQuery($arrayValues).' '.$addon);
-		$sth->execute($parameters);
+	public function selectDatabase($tableName, $arrayValues, $addon, $count = true) {
+		if($count) {
+			$query = '*';
+		} else {
+			$query = 'COUNT(*)';
+		}
+		$sth = $this->conn->prepare('SELECT '.$query.' FROM '.$tableName.$this->whereQuery($arrayValues).' '.$addon);
+		$sth->execute($this->parametersValues(array(), $arrayValues));
 		return $sth;
 	}
 
 	// Insert into database
 	public function insertDatabase($tableName, $arrayValues) {
 		$query = 'INSERT INTO '.$tableName.' ';
-		$parameters = array();
-		foreach($arrayValues as $key => $value) {
-			$parameters[$key] = $value;
-		}
+		$parameters = $this->parametersValues(array(), $arrayValues);
 		$i = 0;
 		foreach($arrayValues as $key => $value) {
 			if($i == 0) {
@@ -93,10 +99,8 @@ class Database
 	// Update database
 	public function updateDatabase($tableName, $arrayValuesWhere, $arrayValuesSet, $addon) {
 		$query = 'UPDATE '.$tableName.' SET ';
-		$parameters = array();
-		foreach($arrayValuesSet as $key => $value) {
-			$parameters[$key] = $value;
-		}
+		$parameters = $this->parametersValues(array(), $arrayValuesWhere);
+		$parameters = $this->parametersValues($parameters, $arrayValuesSet);
 		$i = 0;
 		foreach($arrayValuesSet as $key => $value) {
 			if($i != 0) {
@@ -112,7 +116,7 @@ class Database
 	// Delete from database
 	public function deleteDatabase($tableName, $arrayValues, $addon) {
 		$sth = $this->conn->prepare('DELETE FROM '.$tableName.$this->whereQuery($arrayValues).' '.$addon);
-		$sth->execute();
+		$sth->execute($this->parametersValues(array(), $arrayValues));
 	}
 }
 ?>
