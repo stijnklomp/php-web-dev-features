@@ -10,11 +10,11 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `dbName`
+-- Database: `login_system`
 --
-DROP DATABASE IF EXISTS `dbName`;
-CREATE SCHEMA IF NOT EXISTS `dbName` DEFAULT CHARACTER SET utf8;
-USE `dbName`;
+DROP DATABASE IF EXISTS `login_system`;
+CREATE SCHEMA IF NOT EXISTS `login_system` DEFAULT CHARACTER SET utf8;
+USE `login_system`;
 
 -- --------------------------------------------------------
 

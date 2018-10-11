@@ -1,5 +1,4 @@
 <?php
-
 class User
 {
 	protected $db;
@@ -14,14 +13,16 @@ class User
 	// Db connection
 	public function __construct($username = NULL)
 	{
-		$this->db = new Database();
+		$this->db = Database::getInstance();
 		$this->misc = new Misc();
 	}
 
 	// Create user object
 	public function getUserByID($ID)
 	{
-		$sth = $this->db->selectDatabase('users', 'user_ID', $ID, '');
+		$arrayValues = array();
+		$arrayValues['user_ID'] = $ID;
+		$sth = $this->db->selectDatabase('users', $arrayValues, '');
 		if($row = $sth->fetch())
 		{
 			$this->id 			= $row['user_ID'];
@@ -66,22 +67,21 @@ class User
 	}
 
 	// Login user
-	public function login($username, $password, $cookies)
+	public function login($username, $password)
 	{
-		$sth = $this->db->selectDatabase('users', 'Username', $username, '');
+		$arrayValues = array();
+		$arrayValues['Username'] = $username;
+		$sth = $this->db->selectDatabase('users', $arrayValues, ' AND (Status=1 OR Status=2)');
 		if($row = $sth->fetch())
 		{
 			if(password_verify($password, $row['Password']))
 			{
 				if($row['Status'] == 2)
 				{
-					if($cookies)
-					{
-						// Session variables (30 days)
-						setcookie('user_ID', $row['user_ID'], time()+60*60*24*30, '/', '', FALSE, TRUE);
-						setcookie('Username', $row['Username'], time()+60*60*24*30, '/', '', FALSE, TRUE);
-						setcookie('Password', $row['Password'], time()+60*60*24*30, '/', '', FALSE, TRUE);
-					}
+					// Session variables
+					setcookie('user_ID', $row['user_ID'], time()+60*60*24*30, '/', '', FALSE, TRUE);
+					setcookie('Username', $row['Username'], time()+60*60*24*30, '/', '', FALSE, TRUE);
+					setcookie('Password', $row['Password'], time()+60*60*24*30, '/', '', FALSE, TRUE);
 					$_SESSION['user_ID'] = $row['user_ID'];
 					$_SESSION['Username'] = $row['Username'];
 					$_SESSION['Password'] = $row['Password'];
@@ -89,18 +89,19 @@ class User
 				}
 				else
 				{
-					echo 'Your account has been deactivated';
+					echo 'This account has been deactivated';
+					return false;
 				}				
 			}
 			else
 			{
-				echo 'Your username and/or password is incorrect';
+				echo 'The username and/or password is incorrect';
 				return false;
 			}
 		}
 		else
 		{
-			echo 'Your username and/or password is incorrect';
+			echo 'The username and/or password is incorrect';
 			return false;
 		}
 	}
@@ -110,7 +111,9 @@ class User
 	{
 		if(isset($_POST['registerSubmit']))
 		{
-			$sth = $this->db->selectDatabase('users', 'Username', $username, '');
+			$arrayValues = array();
+			$arrayValues['Username'] = $username;
+			$sth = $this->db->selectDatabase('users', $arrayValues, '');
 			if(!$row = $sth->fetch())
 			{
 				$errorCheck = true;
@@ -152,7 +155,6 @@ class User
 					$arrayValues['Email'] = $email;
 					$arrayValues['Permission'] = 1;
 					$this->db->insertDatabase('users', $arrayValues);
-					echo 'Your account has been successfully registered';
 					return true;
 				}
 			}
@@ -172,7 +174,9 @@ class User
 			{
 				goto skip;
 			}
-			$sth = $this->db->selectDatabase('users', 'Username', $username, '');
+			$arrayValues = array();
+			$arrayValues['Username'] = $username;
+			$sth = $this->db->selectDatabase('users', $arrayValues, '');
 			if(!$row = $sth->fetch())
 			{
 				skip:
@@ -204,16 +208,21 @@ class User
 				{
 					if($email != $this->email)
 					{
+						$arrayValues = array();
+						$arrayValues['email'] = $email;
+						$sth = $this->db->selectDatabase('email_confirm', $arrayValues, '');
 						// Put mail in db
 						$randNmb = rand(100000, 99999999);
+						$arrayValues = array();
 						$arrayValues['user_ID'] = $this->id;
 						$arrayValues['email'] = $email;
 						$arrayValues['randNmb'] = $randNmb;
 						$arrayValues['insertDate'] = time();
-						$sth = $this->db->selectDatabase('email_confirm', 'email', $email, '');
 						if($sth->fetch())
 						{
-							$this->db->updateDatabase('email_confirm', 'user_ID', $this->id, $arrayValues);
+							$arrayValuesWhere = array();
+							$arrayValuesWhere['user_ID'] = $this->id;
+							$this->db->updateDatabase('email_confirm', $arrayValuesWhere, $arrayValues, '');
 						}
 						else
 						{
@@ -225,9 +234,11 @@ class User
 						$msg = wordwrap($msg,70);
 						mail($email,"Vault-Tec | Mail confirmation",$msg);
 					}
-					$arrayValues = array();
-					$arrayValues['Username'] = $username;
-					$this->db->updateDatabase('users', 'user_ID', $this->id, $arrayValues);
+					$arrayValuesWhere = array();
+					$arrayValuesWhere['user_ID'] = $this->id;
+					$arrayValuesSet = array();
+					$arrayValuesSet['Username'] = $username;
+					$this->db->updateDatabase('users', $arrayValuesWhere, $arrayValuesSet, '');
 
 					$_SESSION['Username'] = $username;
 					return true;
@@ -243,35 +254,28 @@ class User
 	// Logout
 	public function logout()
 	{
-		// Unset session var 
-		$_SESSION = array();
-
-		// Retrieve session parameters
-		$params = session_get_cookie_params();
-
-		// Delete session cookie
-		setcookie(session_name(),
-				'', time() - 42000,
-				$params["path"],
-				$params["domain"],
-				$params["secure"],
-				$params["httponly"]);
-
-		// Destroy session
+		setcookie('user_ID', $this->id, time() - 3600, '/', '', FALSE, TRUE);
+		setcookie('Username', $this->id, time() - 3600, '/', '', FALSE, TRUE);
+		setcookie('Password', $this->id, time() - 3600, '/', '', FALSE, TRUE);
 		session_destroy();
 	}
 
 	// Password confirm
 	public function passConfirm()
 	{
+		$arrayValues = array();
+		$arrayValues['user_ID'] = $this->id;
+		$sth = $this->db->selectDatabase('password_confirm', $arrayValues, '');
 		$randNmb = rand(100000, 99999999);
+		$arrayValues = array();
 		$arrayValues['user_ID'] = $this->id;
 		$arrayValues['randNmb'] = $randNmb;
 		$arrayValues['insertDate'] = time();
-		$sth = $this->db->selectDatabase('password_confirm', 'user_ID', $this->id, '');
 		if($sth->fetch())
 		{
-			$this->db->updateDatabase('password_confirm', 'user_ID', $this->id, $arrayValues);
+			$arrayValuesWhere = array();
+			$arrayValuesWhere['user_ID'] = $this->id;
+			$this->db->updateDatabase('password_confirm', $arrayValuesWhere, $arrayValues, '');
 		}
 		else
 		{
@@ -294,9 +298,12 @@ class User
 		}
 		else
 		{
+			$arrayValuesWhere = array();
+			$arrayValuesWhere['user_ID'] = $this->id;
+			$arrayValues = array();
 			$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 			$arrayValues['Password'] = $hashedPassword;
-			$this->db->updateDatabase('users', 'user_ID', $this->id, $arrayValues);
+			$this->db->updateDatabase('users', $arrayValuesWhere, $arrayValues, '');
 			return true;
 		}
 	}

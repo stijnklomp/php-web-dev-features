@@ -5,14 +5,7 @@ if(isset($_POST['changePasswordInput']))
 	{
 		if($user->changePassword($_POST['password'], $_POST['password2']))
 		{
-			?>
-			Your password has been successfully changed.
-			<script>
-			setTimeout(function(){
-				window.location.href = 'index.php?pageStr=login';
-			}, 2000);
-			</script>
-			<?php
+			echo '<script>window.location.href = "login";</script>';
 		}
 		else
 		{
@@ -36,7 +29,9 @@ else
 			<link rel="stylesheet" type="text/css" href="style/accConfirm.css">
 		</head>
 		<?php
-		$sth = $db->selectDatabase('password_confirm', 'user_ID', $user->id, '');
+		$arrayValues = array();
+		$arrayValues['user_ID'] = $user->id;
+		$sth = $db->selectDatabase('password_confirm', $arrayValues, '');
 		if($row = $sth->fetch())
 		{
 			if(isset($_GET['randNmb']))

@@ -14,9 +14,9 @@ document.addEventListener('mousemove', body => {
 // Total box width in pixels
 $loaderDimension = 500;
 // Minimum lines
-$minLines = 4;
+$minLines = 10;
 // Mamimum lines
-$maxLines = 8;
+$maxLines = 10;
 // Line colors in Hex
 $lineColorArray = array('114E80', '3E6482', '4D6980', '213C6E', '155685');
 // Line width in pixels

@@ -1,35 +1,25 @@
 <?php
 session_start();
 include_once 'autoloader.php';
-$db = new Database();
+$db = Database::getInstance();
 $misc = new Misc();
 $user = new User();
 if($user->loginCheck())
 {
 	$user->getUserByID($_SESSION['user_ID']);
 }
+
+$uri = str_replace('/web_development_features/login_system/', '', $_SERVER['REQUEST_URI']);
+$uri = trim($uri, '/');
 ?>
 <!DOCTYPE html>
 <head>
 	<script src="index.js"></script>
 </head>
 <body>
-	<?php
-
-	if($misc->readVar('GET', 'pageStr'))
-	{
-		$pageStr = $_GET['pageStr'];
-	}
-	else
-	{
-		$pageStr = 'home';
-	}
-
-	?>
 <div id="mainContainer">
 	<?php
-
-	switch($pageStr)
+	switch($uri)
 	{
 		case 'login':
 			include 'login.php';
@@ -49,9 +39,6 @@ if($user->loginCheck())
 		default:
 			include 'login.php';
 	}
-
-	$username = $misc->readVar('POST','username');
-
 	?>
 </div>
 </body>

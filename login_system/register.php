@@ -18,32 +18,17 @@
 	<input type="submit" value="Register" name="registerSubmit">
 </form>
 
-<a href="index.php?pageStr=login">
+<a href="login">
 	Login
 </a>
 
 <?php
 // Check if all values are set
-if($misc->readVar('POST','username') 
-	&& $misc->readVar('POST','password')
-	&& $misc->readVar('POST','password2') 
-	&& $misc->readVar('POST','email'))
+if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password2']) && isset($_POST['email']))
 {
-	$username = htmlspecialchars($_POST['username']);
-	$password = htmlspecialchars($_POST['password']);
-	$password2 = htmlspecialchars($_POST['password2']);
-	$email = htmlspecialchars($_POST['email']);
-
-	if($user->register($username, $password, $password2, $email))
+	if($user->register($_POST['username'], $_POST['password'], $_POST['password2'], $_POST['email']))
 	{
-		$user = new User($username);
-		?>
-		<script>
-		setTimeout(function(){
-			window.location.href = 'index.php';
-		}, 2000);
-		</script>
-		<?php
+		echo '<script>window.location.href = "login";</script>';
 	}
 }
 ?>

@@ -1,5 +1,5 @@
 <?php
-$db2 = new Database();
+
 final class Database
 {
 	private $host = 'localhost';
@@ -98,15 +98,15 @@ final class Database
 
 	// Update database
 	public function updateDatabase($tableName, $arrayValuesWhere, $arrayValuesSet, $addon) {
-		$query = 'UPDATE '.$tableName.' SET ';
-		$parameters = $this->parametersValues(array(), $arrayValuesWhere);
-		$parameters = $this->parametersValues($parameters, $arrayValuesSet);
+		$parameters = $this->parametersValues($arrayValuesWhere);
+		$query = 'UPDATE '.$tableName.' SET';
 		$i = 0;
 		foreach($arrayValuesSet as $key => $value) {
+			$parameters[':'.$key] = $value;
 			if($i != 0) {
-				$query .= ', ';
+				$query .= ',';
 			}
-			$query .= $key.' = :'.$key;
+			$query .= ' '.$key.' = :'.$key;
 			$i++;
 		}
 		$sth = $this->conn->prepare($query.$this->whereQuery($arrayValuesWhere).' '.$addon);

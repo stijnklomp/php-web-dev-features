@@ -6,7 +6,9 @@ if($user->loginCheck())
 		<link rel="stylesheet" type="text/css" href="style/accConfirm.css">
 	</head>
 	<?php
-	$sth = $db->selectDatabase('email_confirm', 'user_ID', $user->id, '');
+	$arrayValues = aray();
+	$arrayValues['user_ID'] = $user->id;
+	$sth = $db->selectDatabase('email_confirm', $arrayValues, '');
 	if($row = $sth->fetch())
 	{
 		if(isset($_GET['randNmb']))
@@ -17,20 +19,18 @@ if($user->loginCheck())
 				if($row['randNmb'] == $_GET['randNmb'])
 				{
 					// Delete user from email_confirm
-					$db->deleteDatabase('email_confirm', 'user_ID', $user->id);
+					$arrayValues = array();
+					$arrayValues['user_ID'] = $user->id;
+					$db->deleteDatabase('email_confirm', $arrayValues, '');
 
 					// Change users email
-					$arrayValues['Email'] = $row['email'];
-					$db->updateDatabase('users', 'user_ID', $user->id, $arrayValues);
+					$arrayValuesWhere = array();
+					$arrayValuesWhere['user_ID'] = $user->id;
+					$arrayValuesSet = array();
+					$arrayValuesSet['Email'] = $row['Email'];
+					$db-> updateDatabase('users', $arrayValuesWhere, $arrayValuesSet, '');
 
-					echo 'Your email has been successfully changed to &lsquo;'.$row['email'].'&rsquo;';
-					?>
-					<script>
-					setTimeout(function(){
-						window.location.href = 'index.php?pageStr=account';
-					}, 3500);
-					</script>
-					<?php
+					echo '<script>window.location.href = "account";</script>';
 				}
 				else
 				{

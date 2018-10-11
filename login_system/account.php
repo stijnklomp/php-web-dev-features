@@ -7,15 +7,14 @@ if($user->loginCheck())
 	if(isset($_POST['logout']))
 	{
 		$user->logout();
-		echo '<script>window.location.href = "index.php?pageStr=login";</script>';
+		echo '<script>window.location.href = "login";</script>';
 	}
 
 	// Change user information
-	if($misc->readVar('POST','username') 
-	&& $misc->readVar('POST','email'))
+	if(isset($_POST['username']) && isset($_POST['email']))
 	{
-		$username = htmlspecialchars($_POST['username']);
-		$email = htmlspecialchars($_POST['email']);
+		$username = $_POST['username'];
+		$email = $_POST['email'];
 
 		if($user->update($username, $email))
 		{
@@ -47,7 +46,7 @@ if($user->loginCheck())
 		Your account has been successfully updated
 		<script>
 		setTimeout(function(){
-			window.location.href = 'index.php?pageStr=account';
+			window.location.href = 'account';
 		}, <?php if(isset($_POST['email'])){echo 3500;}else{echo 1000;} ?>);
 		</script>
 		<?php
@@ -73,7 +72,7 @@ if($user->loginCheck())
 		An email has been sent to the filled out email.<br/>Change your account by clicking on the contained link.
 		<script>
 		setTimeout(function(){
-			window.location.href = 'index.php?pageStr=account';
+			window.location.href = 'account';
 		}, 3500);
 		</script>
 		<?php
@@ -123,6 +122,6 @@ if($user->loginCheck())
 }
 else
 {
-	echo 'You need to <a href="index.php?PageStr=login">login</a> to view your account';
+	echo 'You need to <a href="login">login</a> to view your account';
 }
 ?>
