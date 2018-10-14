@@ -23,13 +23,12 @@ USE `login_system`;
 --
 
 CREATE TABLE `users` (
-  `user_ID` varchar(255) NOT NULL,
+  `user_ID` varchar(255) NOT NULL PRIMARY KEY,
   `Username` varchar(100) NOT NULL,
   `Password` varchar(255) NOT NULL,
   `Email` varchar(100) NOT NULL,
   `Permission` int NOT NULL,
-  `Status` int NOT NULL DEFAULT 2,
-  PRIMARY KEY (`user_ID`)
+  `Status` int NOT NULL DEFAULT 2
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -37,7 +36,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_ID`, `Username`, `Password`, `Email`, `Permission`) VALUES
-('B2022F48-ED35-43F9-BB61-B97A3019E004', 'creator', '$2y$10$k.eE6IORn8ODNfpktvzpLu5fnSFV5I5vQler1O.hxkL7bQK2Q5Qoq', 'test@hotmail.com', '3');
+('5BC36F7F9E168', 'creator', '$2y$10$k.eE6IORn8ODNfpktvzpLu5fnSFV5I5vQler1O.hxkL7bQK2Q5Qoq', 'test@hotmail.com', '3');
 -- Username: creator
 -- Password: creator
 
@@ -48,11 +47,10 @@ INSERT INTO `users` (`user_ID`, `Username`, `Password`, `Email`, `Permission`) V
 --
 
 CREATE TABLE `email_confirm` (
-  `user_ID` varchar(255) NOT NULL,
-  `email` varchar(100) NOT NULL,
+  `user_ID` varchar(255) NOT NULL PRIMARY KEY,
+  `Email` varchar(100) NOT NULL,
   `randNmb` int(8) NOT NULL,
   `insertDate` varchar(20) NOT NULL,
-  PRIMARY KEY (`user_ID`),
   FOREIGN KEY (`user_ID`) REFERENCES `users`(`user_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -63,10 +61,9 @@ CREATE TABLE `email_confirm` (
 --
 
 CREATE TABLE `password_confirm` (
-  `user_ID` varchar(255) NOT NULL,
+  `user_ID` varchar(255) NOT NULL PRIMARY KEY,
   `randNmb` int(8) NOT NULL,
   `insertDate` varchar(20) NOT NULL,
-  PRIMARY KEY (`user_ID`),
   FOREIGN KEY (`user_ID`) REFERENCES `users`(`user_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

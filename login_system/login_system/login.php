@@ -1,32 +1,25 @@
 <?php
-if($uri != 'accountConfirm')
-{
-	if(isset($_POST['username']) && isset($_POST['password']))
-	{
-		if(!$user->loginCheck())
-		{
+if($uri != 'accountConfirm') {
+	if(isset($_POST['username']) && isset($_POST['password'])) {
+		if(!$user->loginCheck()) {
 			$username = $_POST['username'];
 			$password = $_POST['password'];
 			$user = new User();
 
-			if($user->login($username,$password))
-			{
+			if($user->login($username,$password)) {
 				echo '<script>window.location.href = "home";</script>';
 			}
 		}
 	}
 
 	// Change password
-	if(isset($_POST['chgPassConfirm']) && isset($_POST['email']))
-	{
+	if(isset($_POST['chgPassConfirm']) && isset($_POST['email'])) {
 		$email = $_POST['email'];
 		$errMessage = NULL;
 		$errorCheck = true;
 		// Check mail
-		if(!empty($email))
-		{
-			if(!filter_var($email, FILTER_VALIDATE_EMAIL))
-			{
+		if(!empty($email)) {
+			if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 				$errMessage = 'Your email is incorrect';
 				$errorCheck = false;
 			}
@@ -47,7 +40,7 @@ if($uri != 'accountConfirm')
 					}
 				}
 			} else {
-				$errMessage .= 'This email is not used on any account';
+				$errMessage = 'This email is not used on any account';
 				$errorCheck = false;
 			}
 			if($errorCheck) {
@@ -57,13 +50,10 @@ if($uri != 'accountConfirm')
 				$arrayValues['insertDate'] = time();
 				$arrayValues['loggedIn'] = 2;
 				$sth = $db->selectDatabase('password_confirm', 'user_ID', $row['user_ID'], '');
-				if($sth->fetch())
-				{
+				if($sth->fetch()) {
 					$arrayValues['Status'] = 1;
 					$db->updateDatabase('password_confirm', 'user_ID', $row['user_ID'], $arrayValues, '');
-				}
-				else
-				{
+				} else {
 					$arrayValues['user_ID'] = $row['user_ID'];
 					$db->insertDatabase('password_confirm', $arrayValues);
 				}
@@ -76,12 +66,10 @@ if($uri != 'accountConfirm')
 				?>
 				<?php
 			} else {
-				$misc->posErrMsg(false);
-				$misc->errorMsg($errMessage, '48px');
+				echo $errMessage;
 			}
 		} else {
-			$misc->posErrMsg(false);
-			$misc->errorMsg($errMessage, '48px');
+			echo $errMessage;
 		}
 	}
 }
@@ -111,17 +99,14 @@ if(!isset($_GET['passChgConfirmed'])) {
 		</form>
 		<?php
 	} else {
-		if($user->loginCheck())
-		{
+		if($user->loginCheck()) {
 			?>
 			<br/><br/>U are already logged in
 			<br/><a href="account">
 				My account
 			</a>
 			<?php
-		}
-		else
-		{
+		} else {
 			?>
 			<form action="" method="POST" autocomplete="on">
 				<div class="textContainer">
@@ -136,8 +121,7 @@ if(!isset($_GET['passChgConfirmed'])) {
 				<button type="submit" class="submitBtnOne">Login</button>
 			</form>
 			<?php
-			if($uri != 'accountConfirm')
-			{
+			if($uri != 'accountConfirm') {
 				?>
 				<a href="register">
 					Register
@@ -153,5 +137,5 @@ if(!isset($_GET['passChgConfirmed'])) {
 		}
 	}
 } else {
-	$misc->textBlock('Change password', 'An email has been sent to the filled out email.<br/>Change your account by clicking on the contained link.<br/>');
+	echo 'An email has been sent to the filled out email.<br/>Change your account by clicking on the contained link.<br/>';
 }

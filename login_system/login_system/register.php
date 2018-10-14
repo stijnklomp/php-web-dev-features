@@ -1,7 +1,3 @@
-<head>
-	<link rel="stylesheet" type="text/css" href="style/register.css">
-</head>
-<h2>Registreren</h2>
 <form method="POST" autocomplete="off">
 	<label for="username"><b>Username</b></label>
 	<input type="text" name="username" value="<?php if(isset($_POST['registerSubmit'])){echo $_POST['username'];} ?>" id="username" onkeypress="return blockSpecialChar(event)" required>
@@ -24,10 +20,8 @@
 
 <?php
 // Check if all values are set
-if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password2']) && isset($_POST['email']))
-{
-	if($user->register($_POST['username'], $_POST['password'], $_POST['password2'], $_POST['email']))
-	{
+if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password2']) && isset($_POST['email'])) {
+	if($user->register($_POST['username'], $_POST['password'], $_POST['password2'], $_POST['email'])) {
 		echo '<script>window.location.href = "login";</script>';
 	}
 }

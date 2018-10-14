@@ -2,42 +2,42 @@
 session_start();
 include_once 'autoloader.php';
 $db = Database::getInstance();
-$misc = new Misc();
+$misc = Misc::getInstance();
 $user = new User();
-if($user->loginCheck())
-{
+if($user->loginCheck()) {
 	$user->getUserByID($_SESSION['user_ID']);
 }
 
 $uri = str_replace('/web_development_features/login_system/', '', $_SERVER['REQUEST_URI']);
 $uri = trim($uri, '/');
+if(strpos($uri, '?')) {
+	$uri = substr($uri, 0, strpos($uri, '?'));
+}
 ?>
 <!DOCTYPE html>
 <head>
-	<script src="index.js"></script>
 </head>
 <body>
 <div id="mainContainer">
 	<?php
-	switch($uri)
-	{
+	switch($uri) {
 		case 'login':
-			include 'login.php';
+			include 'login_system/login.php';
 			break;
 		case 'register':
-			include 'register.php';
+			include 'login_system/register.php';
 			break;
 		case 'account':
-			include 'account.php';
+			include 'login_system/account.php';
 			break;
 		case 'accountConfirm':
-			include 'accConfirm.php';
+			include 'login_system/accConfirm.php';
 			break;
 		case 'passwordConfirm':
-			include 'passConfirm.php';
+			include 'login_system/passConfirm.php';
 			break;
 		default:
-			include 'login.php';
+			include 'login_system/login.php';
 	}
 	?>
 </div>

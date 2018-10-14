@@ -1,29 +1,28 @@
 <?php
-
-final class Database
-{
+final class Database {
+	private static $instance;
 	private $host = 'localhost';
-	private $database = 'test3_images';
+	private $database = 'dbName';
 	private $username = 'root';
 	private $pass = '';
 	public $conn;
 
-	public static function getInstance()
-	{
-		static $inst = null;
-		if($inst === null) {
-			try {
-				$this->conn = new PDO('mysql:host=localhost;dbname='.$this->database, $this->username, $this->pass);
-				$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				$this->conn->prepare('USE '.$this->database)->execute(array());
-			}
-			catch(PDOException $e) {
-				echo 'Connection failed: ' . $e->getMessage();
-			}
-			return $conn;
-		} else {
-			return $inst;
+	private function __construct() {
+		try {
+			$this->conn = new PDO('mysql:host=localhost;dbname='.$this->database, $this->username, $this->pass);
+			$this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->conn->prepare('USE '.$this->database)->execute(array());
 		}
+		catch(PDOException $e) {
+			echo 'Connection failed: '.$e->getMessage();
+		}
+	}
+
+	public static function getInstance() {
+		if(!isset(self::$instance)) {
+			self::$instance = new Database();
+		}
+		return self::$instance;
 	}
 
 	private function whereQuery($arrayValues) {
@@ -35,38 +34,54 @@ final class Database
 				if($i != 0) {
 					$query .= ' AND ';
 				}
-				$query .= $key.' = :'.$key;
+				$query .= '`'.$key.'` = :'.$key;
 				$i++;
 			}
 		}
 		return $query;
 	}
 
-	private function parametersValues($parameters, $arrayValues) {
+	private function parametersValues($arrayValues, $parameters = array()) {
 		if(!empty($arrayValues)) {
 			foreach($arrayValues as $key => $value) {
-				$parameters[$key] = $value;
+				$parameters[':'.$key] = $value;
 			}
 		}
 		return $parameters;
 	}
 
-	// Select from database
-	public function selectDatabase($tableName, $arrayValues, $addon, $count = true) {
-		if($count) {
-			$query = '*';
+	private function querySetup($arrayValues, $whereValue, $query) {
+		if(is_array($arrayValues)) {
+			$parameters = $this->parametersValues($arrayValues);
+			$query .= $this->whereQuery($arrayValues);
 		} else {
-			$query = 'COUNT(*)';
+			$parameters = array(':'.$arrayValues => $whereValue);
+			$query .= ' WHERE `'.$arrayValues.'`=:'.$arrayValues;
 		}
-		$sth = $this->conn->prepare('SELECT '.$query.' FROM '.$tableName.$this->whereQuery($arrayValues).' '.$addon);
-		$sth->execute($this->parametersValues(array(), $arrayValues));
+		return array($parameters, $query);
+	}
+
+	// Select from database
+	public function selectDatabase($tableName, $arrayValues = null, $whereValue = null, $addon = null, $count = true) {
+		$parameters = $query = null;
+		$query = 'SELECT ';
+		if($count) {
+			$query .= '*';
+		} else {
+			$query .= 'COUNT(*)';
+		}
+		$query .= ' FROM '.$tableName;
+		if(!empty($arrayValues)) {
+			list($parameters, $query) = $this->querySetup($arrayValues, $whereValue, $query);
+		}
+		$sth = $this->conn->prepare($query.' '.$addon);
+		$sth->execute($parameters);
 		return $sth;
 	}
 
 	// Insert into database
 	public function insertDatabase($tableName, $arrayValues) {
 		$query = 'INSERT INTO '.$tableName.' ';
-		$parameters = $this->parametersValues(array(), $arrayValues);
 		$i = 0;
 		foreach($arrayValues as $key => $value) {
 			if($i == 0) {
@@ -75,7 +90,7 @@ final class Database
 			else {
 				$query .= ', ';
 			}
-			$query .= $key;
+			$query .= '`'.$key.'`';
 			$i++;
 		}
 		$i = 0;
@@ -93,30 +108,34 @@ final class Database
 			$query .= ')';
 		}
 		$sth = $this->conn->prepare($query);
-		$sth->execute($parameters);
+		$sth->execute($this->parametersValues($arrayValues));
 	}
 
 	// Update database
-	public function updateDatabase($tableName, $arrayValuesWhere, $arrayValuesSet, $addon) {
-		$parameters = $this->parametersValues($arrayValuesWhere);
+	public function updateDatabase($tableName, $arrayValuesWhere, $whereValue = null, $arrayValuesSet, $addon = null) {
 		$query = 'UPDATE '.$tableName.' SET';
 		$i = 0;
 		foreach($arrayValuesSet as $key => $value) {
-			$parameters[':'.$key] = $value;
 			if($i != 0) {
 				$query .= ',';
 			}
-			$query .= ' '.$key.' = :'.$key;
+			$query .= ' `'.$key.'` = :'.$key;
 			$i++;
 		}
-		$sth = $this->conn->prepare($query.$this->whereQuery($arrayValuesWhere).' '.$addon);
+		list($parameters, $query) = $this->querySetup($arrayValuesWhere, $whereValue, $query);
+		$parameters = $this->parametersValues($arrayValuesSet, $parameters);
+		$sth = $this->conn->prepare($query.' '.$addon);
 		$sth->execute($parameters);
 	}
 
 	// Delete from database
-	public function deleteDatabase($tableName, $arrayValues, $addon) {
-		$sth = $this->conn->prepare('DELETE FROM '.$tableName.$this->whereQuery($arrayValues).' '.$addon);
-		$sth->execute($this->parametersValues(array(), $arrayValues));
+	public function deleteDatabase($tableName, $arrayValues = null, $whereValue = null, $addon = null) {
+		$parameters = $query = null;
+		$query = 'DELETE FROM '.$tableName;
+		if(!empty($arrayValues)) {
+			list($parameters, $query) = $this->querySetup($arrayValues, $whereValue, $query);
+		}
+		$sth = $this->conn->prepare($query.' '.$addon);
+		$sth->execute($parameters);
 	}
 }
-?>

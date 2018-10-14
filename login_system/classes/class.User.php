@@ -1,83 +1,74 @@
 <?php
-class User
-{
+class User {
 	protected $db;
 	public $id;
 	public $username;
-	public $firstname;
-	public $lastname;
 	public $password;
 	public $email;
+	public $image;
 	public $permission;
+	public $status;
 
 	// Db connection
-	public function __construct($username = NULL)
-	{
+	public function __construct($username = NULL) {
 		$this->db = Database::getInstance();
-		$this->misc = new Misc();
+		$this->misc = Misc::getInstance();
 	}
 
 	// Create user object
-	public function getUserByID($ID)
-	{
-		$arrayValues = array();
-		$arrayValues['user_ID'] = $ID;
-		$sth = $this->db->selectDatabase('users', $arrayValues, '');
-		if($row = $sth->fetch())
-		{
+	public function getUserByID($ID) {
+		$sth = $this->db->selectDatabase('users', 'user_ID', $ID);
+		if($row = $sth->fetch()) {
 			$this->id 			= $row['user_ID'];
 			$this->username 	= $row['Username'];
 			$this->password 	= $row['Password'];
 			$this->email 		= $row['Email'];
+			if(file_exists('images/users/'.$this->id.'.png')) {
+				$this->image	= 'images/users/'.$this->id.'.png';
+			} elseif(file_exists('images/users/'.$this->id.'.jpg')) {
+				$this->image	= 'images/users/'.$this->id.'.jpg';
+			} elseif(file_exists('images/users/'.$this->id.'.jpeg')) {
+				$this->image	= 'images/users/'.$this->id.'.jpeg';
+			} elseif(file_exists('images/users/'.$this->id.'.gif')) {
+				$this->image	= 'images/users/'.$this->id.'.gif';
+			}
 			$this->permission	= $row['Permission'];
 			$this->status		= $row['Status'];
 			return true;
 		}
-		else
-		{
+		else {
 			return false;
 		}
 	}
 
 	// Login check
-	public function loginCheck()
-	{
-		if((!empty($_COOKIE['user_ID']) && !empty($_COOKIE['Username']) && !empty($_COOKIE['Password'])) && (empty($_SESSION['user_ID']) && empty($_SESSION['Username']) && empty($_SESSION['Password'])))
-		{
+	public function loginCheck() {
+		if((!empty($_COOKIE['user_ID']) && !empty($_COOKIE['Username']) && !empty($_COOKIE['Password'])) && (empty($_SESSION['user_ID']) && empty($_SESSION['Username']) && empty($_SESSION['Password']))) {
 			$_SESSION['user_ID'] = $_COOKIE['user_ID'];
 			$_SESSION['Username'] = $_COOKIE['Username'];
 			$_SESSION['Password'] = $_COOKIE['Password'];
 		}
-		if(isset($_SESSION['user_ID']) AND isset($_SESSION['Username']) AND isset($_SESSION['Password']))
-		{
+		if(isset($_SESSION['user_ID']) AND isset($_SESSION['Username']) AND isset($_SESSION['Password'])) {
 			$parameters = array(':userID'=>$_SESSION['user_ID'],
 								':username'=>$_SESSION['Username'],
 								':password'=>$_SESSION['Password']);
 			$sth = $this->db->conn->prepare('SELECT * FROM users WHERE user_ID=:userID AND Username=:username AND Password=:password');
 			$sth->execute($parameters);
-			if($row = $sth->fetch())
-			{
+			if($row = $sth->fetch()) {
 				return true;
 			}
-			else
-			{
+			else {
 				return false;
 			}
 		}
 	}
 
 	// Login user
-	public function login($username, $password)
-	{
-		$arrayValues = array();
-		$arrayValues['Username'] = $username;
-		$sth = $this->db->selectDatabase('users', $arrayValues, ' AND (Status=1 OR Status=2)');
-		if($row = $sth->fetch())
-		{
-			if(password_verify($password, $row['Password']))
-			{
-				if($row['Status'] == 2)
-				{
+	public function login($username, $password) {
+		$sth = $this->db->selectDatabase('users', 'Username', $username, ' AND (Status=1 OR Status=2)');
+		if($row = $sth->fetch()) {
+			if(password_verify($password, $row['Password'])) {
+				if($row['Status'] == 2) {
 					// Session variables
 					setcookie('user_ID', $row['user_ID'], time()+60*60*24*30, '/', '', FALSE, TRUE);
 					setcookie('Username', $row['Username'], time()+60*60*24*30, '/', '', FALSE, TRUE);
@@ -87,68 +78,54 @@ class User
 					$_SESSION['Password'] = $row['Password'];
 					return true;
 				}
-				else
-				{
-					echo 'This account has been deactivated';
+				else {
+					echo 'This account has been deactivated<br/>';
 					return false;
 				}				
 			}
-			else
-			{
-				echo 'The username and/or password is incorrect';
+			else {
+				echo 'The username and/or password is incorrect<br/>';
 				return false;
 			}
 		}
-		else
-		{
-			echo 'The username and/or password is incorrect';
+		else {
+			echo 'The username and/or password is incorrect<br/>';
 			return false;
 		}
 	}
 
 	// Register user
-	public function register($username, $password, $retypePass, $email)
-	{
-		if(isset($_POST['registerSubmit']))
-		{
-			$arrayValues = array();
-			$arrayValues['Username'] = $username;
-			$sth = $this->db->selectDatabase('users', $arrayValues, '');
-			if(!$row = $sth->fetch())
-			{
+	public function register($username, $password, $retypePass, $email) {
+		if(isset($_POST['registerSubmit'])) {
+			$sth = $this->db->selectDatabase('users', 'Username', $username);
+			if(!$row = $sth->fetch()) {
 				$errorCheck = true;
 
 				// Check username
-				if(strlen($username) < 6)
-				{
-					echo 'Your username must contain atleast 6 characters';
+				if(strlen($username) < 6) {
+					echo 'Your username must contain atleast 6 characters<br/>';
 					$errorCheck = false;
 				}
-				if(is_numeric($username))
-				{
-					echo 'Your username must contain letters';
+				if(is_numeric($username)) {
+					echo 'Your username must contain letters<br/>';
 					$errorCheck = false;
 				}
 
 				// Check email
-				if(!empty($email))
-				{
-					if(strlen($email) < 10)
-					{
-						echo 'Your email is incorrect';
+				if(!empty($email)) {
+					if(strlen($email) < 10) {
+						echo 'Your email is incorrect<br/>';
 						$errorCheck = false;
 					}
 				}
 
 				// Check password
-				if($password != $retypePass)
-				{
-					echo 'Your passwords do not match';
+				if($password != $retypePass) {
+					echo 'Your passwords do not match<br/>';
 					$errorCheck = false;
 				}
 
-				if($errorCheck)
-				{
+				if($errorCheck) {
 					$arrayValues['user_ID'] = trim(com_create_guid(), '{}');
 					$arrayValues['Username'] = $username;
 					$arrayValues['Password'] = password_hash($password, PASSWORD_DEFAULT);
@@ -158,102 +135,115 @@ class User
 					return true;
 				}
 			}
-			else
-			{
-				echo 'Username already exists';
+			else {
+				echo 'Username already exists<br/>';
 			}
 		}
 	}
 
 	// Change user
-	public function update($username, $email)
-	{
-		if(isset($_POST['accSubmit']))
-		{
-			if($username == $this->username)
-			{
+	public function update($username, $email, $file) {
+		if(isset($_POST['accSubmit'])) {
+			if($username == $this->username) {
 				goto skip;
 			}
-			$arrayValues = array();
-			$arrayValues['Username'] = $username;
-			$sth = $this->db->selectDatabase('users', $arrayValues, '');
-			if(!$row = $sth->fetch())
-			{
+			$sth = $this->db->selectDatabase('users', 'Username', $username);
+			if(!$row = $sth->fetch()) {
 				skip:
 				$errorCheck = true;
 
 				// Check username
-				if(strlen($username) < 6)
-				{
-					echo 'Your username must contain atleast 6 characters';
+				if(strlen($username) < 6) {
+					echo 'Your username must contain atleast 6 characters<br/>';
 					$errorCheck = false;
 				}
-				if(is_numeric($username))
-				{
-					echo 'Your username must contain letters';
+				if(is_numeric($username)) {
+					echo 'Your username must contain letters<br/>';
 					$errorCheck = false;
 				}
 
 				// Check email
-				if(!empty($email))
-				{
-					if(strlen($email) < 10)
-					{
-						echo 'Your email is incorrect';
+				if(!empty($email)) {
+					if(strlen($email) < 10) {
+						echo 'Your email is incorrect<br/>';
 						$errorCheck = false;
 					}
 				}
 
-				if($errorCheck)
-				{
-					if($email != $this->email)
-					{
-						$arrayValues = array();
-						$arrayValues['email'] = $email;
-						$sth = $this->db->selectDatabase('email_confirm', $arrayValues, '');
+				// Check image
+				if(!empty($file)) {
+					if($file['size'] > 10485760) {
+						echo 'Your file cannot be bigger than 10 Megabytes<br/>';
+						$errorCheck = false;
+					} elseif($file['size'] == 0) {
+						echo 'You cannot upload an empty file<br/>';
+						$errorCheck = false;
+					} else {
+						$fileType = pathinfo($file['name'], PATHINFO_EXTENSION);
+						$acceptedFileTypes = array('png', 'jpg', 'jpeg', 'gif');
+						if(!in_array($fileType, $acceptedFileTypes))
+						{
+							echo 'You can only upload the following files: &apos;png - jpg - jpeg - gif&apos;<br/>';
+							$errorCheck = false;
+						}
+					}
+				}
+
+				if($errorCheck) {
+					// Confirm new mail
+					if($email != $this->email) {
+						$sth = $this->db->selectDatabase('email_confirm', 'Email', $email);
 						// Put mail in db
 						$randNmb = rand(100000, 99999999);
 						$arrayValues = array();
 						$arrayValues['user_ID'] = $this->id;
-						$arrayValues['email'] = $email;
+						$arrayValues['Email'] = $email;
 						$arrayValues['randNmb'] = $randNmb;
 						$arrayValues['insertDate'] = time();
-						if($sth->fetch())
-						{
-							$arrayValuesWhere = array();
-							$arrayValuesWhere['user_ID'] = $this->id;
-							$this->db->updateDatabase('email_confirm', $arrayValuesWhere, $arrayValues, '');
+						if($sth->fetch()) {
+							$this->db->updateDatabase('email_confirm', 'user_ID', $this->id, $arrayValues);
 						}
-						else
-						{
+						else {
 							$this->db->insertDatabase('email_confirm', $arrayValues);
 						}
 
 						// Send mail
-						$msg = "Visit this link to confirm your mail.\nindex.php?pageStr=accountConfirm&randNmb=".$randNmb;
+						$msg = 'Visit this link to confirm your mail.<br/>accountConfirm&randNmb='.$randNmb;
 						$msg = wordwrap($msg,70);
-						mail($email,"Vault-Tec | Mail confirmation",$msg);
+						mail($email,'Mail confirmation', $msg);
 					}
-					$arrayValuesWhere = array();
-					$arrayValuesWhere['user_ID'] = $this->id;
-					$arrayValuesSet = array();
-					$arrayValuesSet['Username'] = $username;
-					$this->db->updateDatabase('users', $arrayValuesWhere, $arrayValuesSet, '');
+
+					// Save image
+					if(!empty($file)) {
+						if(file_exists('./images/users/'.$this->id.'.png')) {
+							unlink('./images/users/'.$this->id.'.png');
+						} elseif(file_exists('./images/users/'.$this->id.'.jpg')) {
+							unlink('./images/users/'.$this->id.'.jpg');
+						} elseif(file_exists('./images/users/'.$this->id.'.jpeg')) {
+							unlink('./images/users/'.$this->id.'.jpeg');
+						} elseif(file_exists('./images/users/'.$this->id.'.gif')) {
+							unlink('./images/users/'.$this->id.'.gif');
+						}
+						$this->misc->saveUploadedFile($this->id.'.'.$fileType, 'uploadFile', './images/users/');
+					}
+
+					// Save user data
+					$arrayValues = array();
+					$arrayValues['Username'] = $username;
+					$this->db->updateDatabase('users', 'user_ID', $this->id, $arrayValues);
 
 					$_SESSION['Username'] = $username;
 					return true;
 				}
 			}
-			else
-			{
+			else {
 				echo 'Username already exists';
 			}
 		}
 	}
 
 	// Logout
-	public function logout()
-	{
+	public function logout() {
 		setcookie('user_ID', $this->id, time() - 3600, '/', '', FALSE, TRUE);
 		setcookie('Username', $this->id, time() - 3600, '/', '', FALSE, TRUE);
 		setcookie('Password', $this->id, time() - 3600, '/', '', FALSE, TRUE);
@@ -261,49 +251,37 @@ class User
 	}
 
 	// Password confirm
-	public function passConfirm()
-	{
-		$arrayValues = array();
-		$arrayValues['user_ID'] = $this->id;
-		$sth = $this->db->selectDatabase('password_confirm', $arrayValues, '');
+	public function passConfirm() {
+		$sth = $this->db->selectDatabase('password_confirm', 'user_ID', $this->id);
 		$randNmb = rand(100000, 99999999);
 		$arrayValues = array();
 		$arrayValues['user_ID'] = $this->id;
 		$arrayValues['randNmb'] = $randNmb;
 		$arrayValues['insertDate'] = time();
-		if($sth->fetch())
-		{
-			$arrayValuesWhere = array();
-			$arrayValuesWhere['user_ID'] = $this->id;
-			$this->db->updateDatabase('password_confirm', $arrayValuesWhere, $arrayValues, '');
+		if($sth->fetch()) {
+			$this->db->updateDatabase('password_confirm', 'user_ID', $this->id, $arrayValues);
 		}
-		else
-		{
+		else {
 			$this->db->insertDatabase('password_confirm', $arrayValues);
 		}
 
 		// Send mail
-		$msg = "Visit this link to create your new password.\nindex.php?pageStr=passwordConfirm&randNmb=".$randNmb;
-		$msg = wordwrap($msg,70);
-		mail($this->email,"Vault-Tec | Password change",$msg);
+		$msg = 'Visit this link to create your new password.<br/>passwordConfirm&randNmb='.$randNmb;
+		$msg = wordwrap($msg, 70);
+		mail($this->email,'Password change',$msg);
 	}
 
 	// Change password
-	public function changePassword($password, $passwordConfirm)
-	{
-		if($password != $passwordConfirm)
-		{
-			echo 'Your passwords do not match.';
+	public function changePassword($password, $passwordConfirm) {
+		if($password != $passwordConfirm) {
+			echo 'Your passwords do not match.<br/>';
 			return false;
 		}
-		else
-		{
-			$arrayValuesWhere = array();
-			$arrayValuesWhere['user_ID'] = $this->id;
+		else {
 			$arrayValues = array();
 			$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 			$arrayValues['Password'] = $hashedPassword;
-			$this->db->updateDatabase('users', $arrayValuesWhere, $arrayValues, '');
+			$this->db->updateDatabase('users', 'user_ID', $this->id, $arrayValues);
 			return true;
 		}
 	}
