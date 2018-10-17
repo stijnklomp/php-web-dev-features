@@ -126,7 +126,7 @@ class User {
 				}
 
 				if($errorCheck) {
-					$arrayValues['user_ID'] = trim(com_create_guid(), '{}');
+					$arrayValues['user_ID'] = $this->misc->createGUID('-');
 					$arrayValues['Username'] = $username;
 					$arrayValues['Password'] = password_hash($password, PASSWORD_DEFAULT);
 					$arrayValues['Email'] = $email;

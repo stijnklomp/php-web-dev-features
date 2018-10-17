@@ -7,7 +7,7 @@ if($uri != 'accountConfirm') {
 			$user = new User();
 
 			if($user->login($username,$password)) {
-				echo '<script>window.location.href = "home";</script>';
+				echo '<script>window.location.href = "account";</script>';
 			}
 		}
 	}
@@ -139,3 +139,4 @@ if(!isset($_GET['passChgConfirmed'])) {
 } else {
 	echo 'An email has been sent to the filled out email.<br/>Change your account by clicking on the contained link.<br/>';
 }
+?>
