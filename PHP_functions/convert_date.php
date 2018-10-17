@@ -1,6 +1,6 @@
 <?php
 // Convert date to a more readable string
-function convertDate($convertDate, $timePeriod = true) {
+function convertDate($convertDate, bool $timePeriod = true) {
 	$DT1 = new DateTime($convertDate);
 	$DT2 = new DateTime(date('Y-m-d H:i:s'));
 	$diff = $DT1->diff($DT2);

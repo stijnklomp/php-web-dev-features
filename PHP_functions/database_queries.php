@@ -62,7 +62,7 @@ final class Database {
 	}
 
 	// Select from database
-	public function selectDatabase($tableName, $arrayValues = null, $whereValue = null, $addon = null, $count = true) {
+	public function selectDatabase(string $tableName, array $arrayValues = null, $whereValue = null, string $addon = null, bool $count = true) {
 		$parameters = $query = null;
 		$query = 'SELECT ';
 		if($count) {
@@ -80,7 +80,7 @@ final class Database {
 	}
 
 	// Insert into database
-	public function insertDatabase($tableName, $arrayValues) {
+	public function insertDatabase(string $tableName, array $arrayValues) {
 		$query = 'INSERT INTO '.$tableName.' ';
 		$i = 0;
 		foreach($arrayValues as $key => $value) {
@@ -112,7 +112,7 @@ final class Database {
 	}
 
 	// Update database
-	public function updateDatabase($tableName, $arrayValuesWhere, $whereValue = null, $arrayValuesSet, $addon = null) {
+	public function updateDatabase(string $tableName, array $arrayValuesWhere, $whereValue = null, array $arrayValuesSet, string $addon = null) {
 		$query = 'UPDATE '.$tableName.' SET';
 		$i = 0;
 		foreach($arrayValuesSet as $key => $value) {
@@ -129,7 +129,7 @@ final class Database {
 	}
 
 	// Delete from database
-	public function deleteDatabase($tableName, $arrayValues = null, $whereValue = null, $addon = null) {
+	public function deleteDatabase(string $tableName, array $arrayValues = null, $whereValue = null, string $addon = null) {
 		$parameters = $query = null;
 		$query = 'DELETE FROM '.$tableName;
 		if(!empty($arrayValues)) {
