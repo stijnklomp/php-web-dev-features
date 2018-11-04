@@ -65,7 +65,7 @@ if($user->loginCheck()) {
 	<?php
 	if($check) {
 		?>
-		<form action="" method="POST" id="logout">
+		<form action="" method="POST">
 			<input type="submit" name="logout" value="Logout">
 		</form>
 		<form action="" method="POST" enctype="multipart/form-data" autocomplete="off">

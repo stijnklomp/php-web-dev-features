@@ -23,15 +23,8 @@ class User {
 			$this->username 	= $row['Username'];
 			$this->password 	= $row['Password'];
 			$this->email 		= $row['Email'];
-			if(file_exists('images/users/'.$this->id.'.png')) {
-				$this->image	= 'images/users/'.$this->id.'.png';
-			} elseif(file_exists('images/users/'.$this->id.'.jpg')) {
-				$this->image	= 'images/users/'.$this->id.'.jpg';
-			} elseif(file_exists('images/users/'.$this->id.'.jpeg')) {
-				$this->image	= 'images/users/'.$this->id.'.jpeg';
-			} elseif(file_exists('images/users/'.$this->id.'.gif')) {
-				$this->image	= 'images/users/'.$this->id.'.gif';
-			}
+			$img = $this->misc->findProfileImage($this->id);
+			$this->image 		= $img[0];
 			$this->permission	= $row['Permission'];
 			$this->status		= $row['Status'];
 			return true;
@@ -215,16 +208,14 @@ class User {
 
 					// Save image
 					if(!empty($file)) {
-						if(file_exists('./images/users/'.$this->id.'.png')) {
-							unlink('./images/users/'.$this->id.'.png');
-						} elseif(file_exists('./images/users/'.$this->id.'.jpg')) {
-							unlink('./images/users/'.$this->id.'.jpg');
-						} elseif(file_exists('./images/users/'.$this->id.'.jpeg')) {
-							unlink('./images/users/'.$this->id.'.jpeg');
-						} elseif(file_exists('./images/users/'.$this->id.'.gif')) {
-							unlink('./images/users/'.$this->id.'.gif');
+						$img = $this->misc->findProfileImage($this->id);
+						unlink($img[0]);
+						if($img[1] == 1) {
+							$img[1] = 2;
+						} else {
+							$img[1] = 1;
 						}
-						$this->misc->saveUploadedFile($this->id.'.'.$fileType, 'uploadFile', './images/users/');
+						$this->misc->saveUploadedFile($this->id.$img[1].'.'.$fileType, 'uploadFile', './images/users/');
 					}
 
 					// Save user data

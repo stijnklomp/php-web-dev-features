@@ -120,5 +120,38 @@ final class Misc {
 			return -1;
 		}
 	}
+
+	// Check if profile image exists
+	public function findProfileImage($userID) {
+		$img = array();
+		if(file_exists('images/users/'.$userID.'1.png')) {
+			$img[0] = 'images/users/'.$userID.'1.png';
+			$img[1] = 1;
+		} elseif(file_exists('images/users/'.$userID.'1.jpg')) {
+			$img[0] = 'images/users/'.$userID.'1.jpg';
+			$img[1] = 1;
+		} elseif(file_exists('images/users/'.$userID.'1.jpeg')) {
+			$img[0] = 'images/users/'.$userID.'1.jpeg';
+			$img[1] = 1;
+		} elseif(file_exists('images/users/'.$userID.'1.gif')) {
+			$img[0] = 'images/users/'.$userID.'1.gif';
+			$img[1] = 1;
+		} elseif(file_exists('images/users/'.$userID.'2.png')) {
+			$img[0] = 'images/users/'.$userID.'2.png';
+			$img[1] = 2;
+		} elseif(file_exists('images/users/'.$userID.'2.jpg')) {
+			$img[0] = 'images/users/'.$userID.'2.jpg';
+			$img[1] = 2;
+		} elseif(file_exists('images/users/'.$userID.'2.jpeg')) {
+			$img[0] = 'images/users/'.$userID.'2.jpeg';
+			$img[1] = 2;
+		} elseif(file_exists('images/users/'.$userID.'2.gif')) {
+			$img[0] = 'images/users/'.$userID.'2.gif';
+			$img[1] = 2;
+		} else {
+			$img[0] = false;
+		}
+		return $img;
+	}
 }
 ?>
