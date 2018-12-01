@@ -9,9 +9,9 @@ $lineWidth = 2;
 // Line color
 $color = '#00acc1';
 // Loader rotate speed in seconds
-$rotateSpeed = 3;
+$rotateSpeed = 100;
 // Line rotate speed in seconds
-$lineSpeed = 5;
+$lineSpeed = 3;
 // ////////////////////////////////////////////////////////////// -->
 ?>
 <div class="circleRotate">
@@ -26,8 +26,8 @@ $lineSpeed = 5;
 </div>
 <style>
 .circleRotate{
-	width: <?= $width; ?>;
-	height: <?= $height; ?>;
+	width: <?= $width; ?>px;
+	height: <?= $height; ?>px;
 	-webkit-animation: spin <?= $rotateSpeed; ?>s linear infinite;
 	-moz-animation: spin <?= $rotateSpeed; ?>s linear infinite;
 	animation: spin <?= $rotateSpeed; ?>s linear infinite;
@@ -39,8 +39,8 @@ $lineSpeed = 5;
 
 .circleBlock{
 	position: absolute;
-	width: <?= $width; ?>;
-	height: <?= $height; ?>;
+	width: <?= $width; ?>px;
+	height: <?= $height; ?>px;
 }
 
 .circleLine{
@@ -83,24 +83,15 @@ $lineSpeed = 5;
 
 .circleContainer{
 	position: absolute;
-	width: <?= $width; ?>;
-	height: <?= $height; ?>;
-	-webkit-animation:  rotate <?= ($lineSpeed * 5); ?>s linear infinite;
-	-moz-animation:  rotate <?= ($lineSpeed * 5); ?>s linear infinite;
-	animation: rotate <?= ($lineSpeed * 5); ?>s linear infinite;
+	width: <?= $width; ?>px;
+	height: <?= $height; ?>px;
+	-webkit-animation:  rotate <?= ($lineSpeed); ?>s linear infinite;
+	-moz-animation:  rotate <?= ($lineSpeed); ?>s linear infinite;
+	animation: rotate <?= ($lineSpeed); ?>s linear infinite;
 }
 
 @keyframes rotate {
-	0% { transform: rotate(0deg);-webkit-transform: rotate(0deg);-moz-transform: rotate(0deg); }
-	19.9999% { transform: rotate(0deg);-webkit-transform: rotate(0deg);-moz-transform: rotate(0deg); }
-	20% { transform: rotate(-72deg);-webkit-transform: rotate(-72deg);-moz-transform: rotate(-72deg); }
-	39.9999% { transform: rotate(-72deg);-webkit-transform: rotate(-72deg);-moz-transform: rotate(-72deg); }
-	40% { transform: rotate(-144deg);-webkit-transform: rotate(-144deg);-moz-transform: rotate(-144deg); }
-	59.9999% { transform: rotate(-144deg);-webkit-transform: rotate(-144deg);-moz-transform: rotate(-144deg); }
-	60% { transform: rotate(-216deg);-webkit-transform: rotate(-216deg);-moz-transform: rotate(-216deg); }
-	79.9999% { transform: rotate(-216deg);-webkit-transform: rotate(-216deg);-moz-transform: rotate(-216deg); }
-	80% { transform: rotate(-288deg);-webkit-transform: rotate(-288deg);-moz-transform: rotate(-288deg); }
-	99.9999% { transform: rotate(-288deg);-webkit-transform: rotate(-288deg);-moz-transform: rotate(-288deg); }
-	100% { transform: rotate(-360deg);-webkit-transform: rotate(-360deg);-moz-transform: rotate(-360deg); }
+	from { transform: rotate(0deg);-webkit-transform: rotate(0deg);-moz-transform: rotate(0deg); }
+	to { transform: rotate(432deg);-webkit-transform: rotate(432deg);-moz-transform: rotate(432deg); }
 }
 </style>

@@ -29,18 +29,6 @@ $slideshowPictureSpeed = 0.5;
 $slideshowPictureTiming = 2;
 // ////////////////////////////////////////////////////////////// -->
 
-if(empty($slideshowPictures)) {
-	$slideshowPictures = array(1=>'https://via.placeholder.com/350x150');
-}
-if(empty($slideshowSpeed) || !is_int($slideshowSpeed)) {
-	$slideshowSpeed = 2000;
-}
-if(empty($slideshowPictureSpeed) || !is_int($slideshowPictureSpeed)) {
-	$slideshowPictureSpeed = 0.5;
-}
-if(empty($slideshowPictureTiming) || !is_int($slideshowPictureTiming)) {
-	$slideshowPictureTiming = 2;
-}
 $slideshowTotalPictures = count($slideshowPictures);
 ?>
 <style>
@@ -94,8 +82,7 @@ $slideshowTotalPictures = count($slideshowPictures);
 		for($i=1; $i - 1<$slideshowTotalPictures; $i++) {
 			echo '<img src="'.$slideshowPictures[$i].'" class="slideshowPicture">';
 		}
-	}
-	else {
+	} else {
 		for($i=$slideshowTotalPictures; $i>0; $i--) {
 			echo '<img src="'.$slideshowPictures[$i].'" class="slideshowPicture">';
 		}
@@ -108,59 +95,55 @@ if($slideshowTotalPictures > 1) {
 	<script>
 	var slidePict = document.getElementsByClassName('slideshowPicture');
 	var j = 1;
-	var l = Number('<?= $slideshowTotalPictures; ?>') - 1;
 	var check = true;
 	setInterval(function(){j = slideshowDisplayNewPicture(j)}, Number(<?= $slideshowSpeed; ?>));
 	function slideshowDisplayNewPicture(j) {
-		var k = 1;
 		if(j == Number(<?= $slideshowTotalPictures; ?>)){
-			for(var i = 0; i < k; i++) {
+			for(var i = 0; i < <?= $slideshowTotalPictures; ?>; i++) {
 				if(slidePict[i]) {
 					slidePict[i].style.cssText = '<?php if($slideshowDirection == 1 || $slideshowDirection == 2){echo 'left:';}else{echo 'top:';} ?> 0;';
-					k++;
 				}
 			}
 			j = 1;
-			l = Number('<?= $slideshowTotalPictures; ?>');
 		} else {
 			if(check) {
 				<?php
 				if($slideshowTotalPictures > 2 && ($slideshowDirection == 2 || $slideshowDirection == 4)) {
 					?>
 					j++;
-					k++;
 					check = false;
 					<?php
 				}
 				?>
 			}
-			for(var i = 0; i < k; i++) {
-				
+			for(var i = 0; i < <?= $slideshowTotalPictures; ?>; i++) {
 				if(slidePict[i]) {
 					<?php
-					if($slideshowDirection == 1) {
-						?>
-						slidePict[i].style.cssText = 'left: -'+(100 * j)+'%;';
-						<?php
-					} elseif($slideshowDirection == 2) {
-						?>
-						slidePict[i].style.cssText = 'left: '+((0 - (Number('<?= $slideshowTotalPictures; ?>') * 100)) + (100 * j))+'%;';
-						<?php
-					} elseif($slideshowDirection == 3) {
-						?>
-						slidePict[i].style.cssText = 'top: -'+(100 * j)+'%;';
-						<?php
-					} else {
-						?>
-						slidePict[i].style.cssText = 'top: '+((0 - (Number('<?= $slideshowTotalPictures; ?>') * 100)) + (100 * j))+'%;';
-						<?php
+					switch($slideshowDirection) {
+						case 1:
+							?>
+							slidePict[i].style.cssText = 'left: -'+(100 * j)+'%;';
+							<?php
+							break;
+						case 2:
+							?>
+							slidePict[i].style.cssText = 'left: '+((0 - (Number('<?= $slideshowTotalPictures; ?>') * 100)) + (100 * j))+'%;';
+							<?php
+							break;
+						case 3:
+							?>
+							slidePict[i].style.cssText = 'top: -'+(100 * j)+'%;';
+							<?php
+							break;
+						default:
+							?>
+							slidePict[i].style.cssText = 'top: '+((0 - (Number('<?= $slideshowTotalPictures; ?>') * 100)) + (100 * j))+'%;';
+							<?php
 					}
 					?>
-					k++;
 				}
 			}
 			j++;
-			l--;
 		}
 		return j;
 	}
