@@ -87,13 +87,9 @@ if(in_array($domain, $certifiedWebsites)) {
 				$sth = $db->selectDatabase('users', 'Username', $username);
 				if($rows = $sth->fetch()) {
 					$userID = $rows['user_ID'];
-				} elseif($skipChk == 1) {
-					$userID = $userID;
-				} else {
+				} elseif($skipChk != 1) {
 					$userID = NULL;
 				}
-			} else {
-				$userID = $userID;
 			}
 			if($user->getUserByID($userID)) {
 				if($user->status != 0) {

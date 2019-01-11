@@ -1,6 +1,6 @@
 <div id="content">Loading</div>
 <script>
-function checkCode(checkLogin, user = null, loadedFIle = null) {
+function checkCode(checkLogin, user = null, loadedFile = null) {
 	if(checkLogin) {
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange=function(){
@@ -8,7 +8,7 @@ function checkCode(checkLogin, user = null, loadedFIle = null) {
 				document.getElementById('content').innerHTML = this.responseText;
 			}
 		}
-		xmlhttp.open("POST", loadedFIle);
+		xmlhttp.open("POST", loadedFile);
 		xmlhttp.setRequestHeader("Content-Type", "application/json");
 		xmlhttp.send(JSON.stringify(user));
 	} else {
@@ -55,7 +55,7 @@ if(username !== '' && password !== '') {
 			checkCode(checkLogin, user, 'JSON_decoder1.php');
 		}
 	}
-	xmlhttp.open("GET","http://website.com/vt_API_user.php?username="+username+"&passwordHash="+password+"&securityCode=A92K5FmD29dWldeup84QVZy3osPv");
+	xmlhttp.open("GET","http://website.com/API_user.php?username="+username+"&passwordHash="+password+"&securityCode=A92K5FmD29dWldeup84QVZy3osPv");
 	xmlhttp.send();
 } else {
 	checkCode(checkLogin);

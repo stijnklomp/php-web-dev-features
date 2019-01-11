@@ -9,11 +9,9 @@ function convertDate($convertDate, bool $timePeriod = true) {
 			if($diff->d == 0) {
 				if($diff->h == 0) {
 					if($diff->i == 0) {
-						if($timePeriod) {
-							echo 'just now';
-						} else {
-							echo 'less then one minute';
-						}
+						echo ($timePeriod
+						? 'just now'
+						: 'less then one minute');
 					} elseif($diff->i == 1) {
 						// if($timePeriod) {
 						// 	echo 'a minute ago';
