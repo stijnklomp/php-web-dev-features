@@ -26,16 +26,27 @@ if($user->loginCheck()) {
 						</form>
 						<?php
 					} else {
-						echo 'The link is incorrect. Please make sure you paste the full link in your URL bar.<br/>If this keeps occurring we suggest you press the change password button again at your <a href="account">account</a>.<br/>';
+						?>
+						The link is incorrect. Please make sure you paste the full link in your URL bar.<br/>
+						If this keeps occurring we suggest you press the change password button again at your <a href="account">account</a>.<br/>
+						<?php
 					}
 				} else {
-					echo 'This link has expired and is therefor not valid anymore.<br/>Please go back to your <a href="account">account</a> and press the change password button.<br/>';
+					?>
+					This link has expired and is therefor not valid anymore.<br/>
+					Please go back to your <a href="account">account</a> and press the change password button.<br/>
+					<?php
 				}
 			} else {
-				echo 'The link is incorrect. Please make sure you paste the full link in your URL bar.<br/>If this keeps occurring we suggest you click the change password button again at your <a href="account">account</a>.<br/>';
+				?>
+				The link is incorrect. Please make sure you paste the full link in your URL bar.<br/>
+				If this keeps occurring we suggest you click the change password button again at your <a href="account">account</a>.<br/>
+				<?php
 			}
 		} else {
-			echo 'To change your password you need to go to your <a href="account">account</a> and click the change password button.<br/>';
+			?>
+			To change your password you need to go to your <a href="account">account</a> and click the change password button.<br/>
+			<?php
 		}
 	}
 } else {

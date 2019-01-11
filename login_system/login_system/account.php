@@ -10,21 +10,17 @@ if($user->loginCheck()) {
 
 	// Change user information
 	if(isset($_POST['username']) && isset($_POST['email'])) {
-		if(file_exists($_FILES['uploadFile']['tmp_name']) || is_uploaded_file($_FILES['uploadFile']['tmp_name'])) {
-			$file = $_FILES['uploadFile'];
-		} else {
-			$file = null;
-		}
+		$file = (file_exists($_FILES['uploadFile']['tmp_name']) || is_uploaded_file($_FILES['uploadFile']['tmp_name']))
+		? $_FILES['uploadFile']
+		: null;
 
 		// Username and email
 		$username = $_POST['username'];
 		$email = $_POST['email'];
 		if($user->update($username, $email, $file)) {
-			if($email != $user->email) {
-				echo '<script>window.location.href = "account?chgAcc=true&chgMail=true";</script>';
-			} else {
-				echo '<script>window.location.href = "account?chgAcc=true";</script>';
-			}
+			echo ($email != $user->email)
+			? '<script>window.location.href = "account?chgAcc=true&chgMail=true";</script>'
+			: '<script>window.location.href = "account?chgAcc=true";</script>';
 		}
 	}
 	if(isset($_GET['chgAcc'])) {
@@ -98,12 +94,9 @@ if($user->loginCheck()) {
 						$width = $imgSize[0];
 						$height = $imgSize[1];
 						echo '<img src="'.$user->image.'" style="position: absolute;z-index: 1;';
-						if($width < 150 && $height < 150) {
-							echo 'width: '.$width.'px;height: '.$height.'px;top: calc(50% - '.($height / 2).'px);left: calc(50% - '.($width / 2).'px);">';
-						}
-						else {
-							echo 'width: 100%;height: 100%;">';
-						}
+						echo ($width < 150 && $height < 150)
+						? 'width: '.$width.'px;height: '.$height.'px;top: calc(50% - '.($height / 2).'px);left: calc(50% - '.($width / 2).'px);">'
+						: 'width: 100%;height: 100%;">';
 						echo '<div class="accountImageBackground"></div>';
 					} else {
 						echo '<div class="accountImageBackground"><i class="fa fa-user" aria-hidden="true" id="accountImageIcon"></i></div>';

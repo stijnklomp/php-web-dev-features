@@ -1,10 +1,7 @@
 <?php
 final class Database {
 	private static $instance;
-	private $host = 'localhost';
-	private $database = 'login_system';
-	private $username = 'root';
-	private $pass = '';
+	private $database, $username, $pass;
 	public $conn;
 
 	private function __construct() {
@@ -62,14 +59,12 @@ final class Database {
 	}
 
 	// Select from database
-	public function selectDatabase($tableName, $arrayValues = null, $whereValue = null, $addon = null, $count = true) {
+	public function selectDatabase(string $tableName, $arrayValues = null, string $whereValue = null, string $addon = null, bool $count = false) {
 		$parameters = $query = null;
 		$query = 'SELECT ';
-		if($count) {
-			$query .= '*';
-		} else {
-			$query .= 'COUNT(*)';
-		}
+		($count)
+		? $query .= 'COUNT(*)'
+		: $query .= '*';
 		$query .= ' FROM '.$tableName;
 		if(!empty($arrayValues)) {
 			list($parameters, $query) = $this->querySetup($arrayValues, $whereValue, $query);
@@ -80,27 +75,21 @@ final class Database {
 	}
 
 	// Insert into database
-	public function insertDatabase($tableName, $arrayValues) {
+	public function insertDatabase(string $tableName, array $arrayValues) {
 		$query = 'INSERT INTO '.$tableName.' ';
 		$i = 0;
 		foreach($arrayValues as $key => $value) {
-			if($i == 0) {
-				$query .= '(';
-			}
-			else {
-				$query .= ', ';
-			}
+			($i == 0)
+			? $query .= '('
+			: $query .= ', ';
 			$query .= '`'.$key.'`';
 			$i++;
 		}
 		$i = 0;
 		foreach($arrayValues as $key => $value) {
-			if($i == 0) {
-				$query .= ') VALUES (';
-			}
-			else {
-				$query .= ', ';
-			}
+			($i == 0)
+			? $query .= ') VALUES ('
+			: $query .= ', ';
 			$query .= ':'.$key;
 			$i++;
 		}
@@ -112,7 +101,7 @@ final class Database {
 	}
 
 	// Update database
-	public function updateDatabase($tableName, $arrayValuesWhere, $whereValue = null, $arrayValuesSet, $addon = null) {
+	public function updateDatabase(string $tableName, $arrayValuesWhere, string $whereValue = null, array $arrayValuesSet, string $addon = null) {
 		$query = 'UPDATE '.$tableName.' SET';
 		$i = 0;
 		foreach($arrayValuesSet as $key => $value) {
@@ -129,7 +118,7 @@ final class Database {
 	}
 
 	// Delete from database
-	public function deleteDatabase($tableName, $arrayValues = null, $whereValue = null, $addon = null) {
+	public function deleteDatabase(string $tableName, $arrayValues = null, string $whereValue = null, string $addon = null) {
 		$parameters = $query = null;
 		$query = 'DELETE FROM '.$tableName;
 		if(!empty($arrayValues)) {

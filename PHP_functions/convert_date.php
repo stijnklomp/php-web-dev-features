@@ -15,31 +15,43 @@ function convertDate($convertDate, bool $timePeriod = true) {
 							echo 'less then one minute';
 						}
 					} elseif($diff->i == 1) {
-						if($timePeriod) {
-							echo 'a minute ago';
-						} else {
-							echo '1 minute';
-						}
+						// if($timePeriod) {
+						// 	echo 'a minute ago';
+						// } else {
+						// 	echo '1 minute';
+						// }
+						echo ($timePeriod
+						? 'a minute ago'
+						: '1 minute');
 					} else {
-						if($timePeriod) {
-							echo $diff->i.' minutes ago';
-						} else {
-							echo $diff->i.' minutes';
-						}
+						// if($timePeriod) {
+						// 	echo $diff->i.' minutes ago';
+						// } else {
+						// 	echo $diff->i.' minutes';
+						// }
+						echo $diff->i.($timePeriod
+						? ' minutes ago'
+						: ' minutes');
 					}
 				} else {
 					if($diff->h == 1) {
-						if($timePeriod) {
-							echo 'an hour ago';
-						} else {
-							echo 'one hour';
-						}
+						// if($timePeriod) {
+						// 	echo 'an hour ago';
+						// } else {
+						// 	echo 'one hour';
+						// }
+						echo ($timePeriod
+						? 'an hour ago'
+						: 'one hour');
 					} else {
-						if($timePeriod) {
-							echo $diff->h.' hours ago';
-						} else {
-							echo $diff->h.' hours';
-						}
+						// if($timePeriod) {
+						// 	echo $diff->h.' hours ago';
+						// } else {
+						// 	echo $diff->h.' hours';
+						// }
+						echo $diff->h.($timePeriod
+						? ' hours ago'
+						: ' hours');
 					}
 				}
 			} else {

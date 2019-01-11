@@ -1,15 +1,13 @@
 <style>
 #bar-chart{
-  background-color: grey;
+  background-color: #BFBFBF;
   position: absolute;
   width: 800px;
   height: 300px;
-  top: calc(50% - 151px);
-  left: calc(50% - 401px);
 }
 
 .bar-chart-bar{
-  background-color: purple;
+  background-color: #3D6785;
 }
 </style>
 <!-- Style the chart //////////////////////////////////////////// -->

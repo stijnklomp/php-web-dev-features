@@ -1,56 +1,48 @@
 <?php
 class User {
 	protected $db;
-	public $id;
-	public $username;
-	public $password;
-	public $email;
-	public $image;
-	public $permission;
-	public $status;
+	public $id, $username, $password, $email, $permission, $image, $status;
 
 	// Db connection
 	public function __construct($username = NULL) {
-		$this->db = Database::getInstance();
+		$this->db 	= Database::getInstance();
 		$this->misc = Misc::getInstance();
 	}
 
 	// Create user object
 	public function getUserByID($ID) {
-		$sth = $this->db->selectDatabase('users', 'user_ID', $ID);
+		$sth = $this->db->selectDatabase('users', 'userId', $ID);
 		if($row = $sth->fetch()) {
-			$this->id 			= $row['user_ID'];
+			$this->id 				= $row['userId'];
 			$this->username 	= $row['Username'];
 			$this->password 	= $row['Password'];
-			$this->email 		= $row['Email'];
+			$this->email 			= $row['Email'];
+			$this->permission = $row['Permission'];
 			$img = $this->misc->findProfileImage($this->id);
-			$this->image 		= $img[0];
-			$this->permission	= $row['Permission'];
-			$this->status		= $row['Status'];
+			$this->image 			= $img[0];
+			$this->status			= $row['Status'];
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	// Login check
 	public function loginCheck() {
-		if((!empty($_COOKIE['user_ID']) && !empty($_COOKIE['Username']) && !empty($_COOKIE['Password'])) && (empty($_SESSION['user_ID']) && empty($_SESSION['Username']) && empty($_SESSION['Password']))) {
-			$_SESSION['user_ID'] = $_COOKIE['user_ID'];
+		if((!empty($_COOKIE['userId']) && !empty($_COOKIE['Username']) && !empty($_COOKIE['Password'])) && (empty($_SESSION['userId']) && empty($_SESSION['Username']) && empty($_SESSION['Password']))) {
+			$_SESSION['userId'] = $_COOKIE['userId'];
 			$_SESSION['Username'] = $_COOKIE['Username'];
 			$_SESSION['Password'] = $_COOKIE['Password'];
 		}
-		if(isset($_SESSION['user_ID']) AND isset($_SESSION['Username']) AND isset($_SESSION['Password'])) {
-			$parameters = array(':userID'=>$_SESSION['user_ID'],
-								':username'=>$_SESSION['Username'],
-								':password'=>$_SESSION['Password']);
-			$sth = $this->db->conn->prepare('SELECT * FROM users WHERE user_ID=:userID AND Username=:username AND Password=:password');
+		if(isset($_SESSION['userId']) AND isset($_SESSION['Username']) AND isset($_SESSION['Password'])) {
+			$parameters = array(':userID' => $_SESSION['userId'],
+													':username' => $_SESSION['Username'],
+													':password' => $_SESSION['Password']);
+			$sth = $this->db->conn->prepare('SELECT * FROM users WHERE userId=:userID AND Username=:username AND Password=:password');
 			$sth->execute($parameters);
 			if($row = $sth->fetch()) {
 				return true;
-			}
-			else {
+			} else {
 				return false;
 			}
 		}
@@ -63,25 +55,22 @@ class User {
 			if(password_verify($password, $row['Password'])) {
 				if($row['Status'] == 2) {
 					// Session variables
-					setcookie('user_ID', $row['user_ID'], time()+60*60*24*30, '/', '', FALSE, TRUE);
+					setcookie('userId', $row['userId'], time()+60*60*24*30, '/', '', FALSE, TRUE);
 					setcookie('Username', $row['Username'], time()+60*60*24*30, '/', '', FALSE, TRUE);
 					setcookie('Password', $row['Password'], time()+60*60*24*30, '/', '', FALSE, TRUE);
-					$_SESSION['user_ID'] = $row['user_ID'];
+					$_SESSION['userId'] = $row['userId'];
 					$_SESSION['Username'] = $row['Username'];
 					$_SESSION['Password'] = $row['Password'];
 					return true;
-				}
-				else {
+				} else {
 					echo 'This account has been deactivated<br/>';
 					return false;
-				}				
-			}
-			else {
+				}
+			} else {
 				echo 'The username and/or password is incorrect<br/>';
 				return false;
 			}
-		}
-		else {
+		} else {
 			echo 'The username and/or password is incorrect<br/>';
 			return false;
 		}
@@ -119,16 +108,14 @@ class User {
 				}
 
 				if($errorCheck) {
-					$arrayValues['user_ID'] = $this->misc->createGUID('-');
+					$arrayValues['userId'] = $this->misc->createGUID('-');
 					$arrayValues['Username'] = $username;
 					$arrayValues['Password'] = password_hash($password, PASSWORD_DEFAULT);
 					$arrayValues['Email'] = $email;
-					$arrayValues['Permission'] = 1;
 					$this->db->insertDatabase('users', $arrayValues);
 					return true;
 				}
-			}
-			else {
+			} else {
 				echo 'Username already exists<br/>';
 			}
 		}
@@ -174,8 +161,7 @@ class User {
 					} else {
 						$fileType = pathinfo($file['name'], PATHINFO_EXTENSION);
 						$acceptedFileTypes = array('png', 'jpg', 'jpeg', 'gif');
-						if(!in_array($fileType, $acceptedFileTypes))
-						{
+						if(!in_array($fileType, $acceptedFileTypes)) {
 							echo 'You can only upload the following files: &apos;png - jpg - jpeg - gif&apos;<br/>';
 							$errorCheck = false;
 						}
@@ -189,20 +175,17 @@ class User {
 						// Put mail in db
 						$randNmb = rand(100000, 99999999);
 						$arrayValues = array();
-						$arrayValues['user_ID'] = $this->id;
+						$arrayValues['userId'] = $this->id;
 						$arrayValues['Email'] = $email;
 						$arrayValues['randNmb'] = $randNmb;
 						$arrayValues['insertDate'] = time();
-						if($sth->fetch()) {
-							$this->db->updateDatabase('email_confirm', 'user_ID', $this->id, $arrayValues);
-						}
-						else {
-							$this->db->insertDatabase('email_confirm', $arrayValues);
-						}
+						($sth->fetch())
+						? $this->db->updateDatabase('email_confirm', 'userId', $this->id, $arrayValues)
+						: $this->db->insertDatabase('email_confirm', $arrayValues);
 
 						// Send mail
 						$msg = 'Visit this link to confirm your mail.<br/>accountConfirm&randNmb='.$randNmb;
-						$msg = wordwrap($msg,70);
+						$msg = wordwrap($msg, 70);
 						mail($email,'Mail confirmation', $msg);
 					}
 
@@ -210,24 +193,21 @@ class User {
 					if(!empty($file)) {
 						$img = $this->misc->findProfileImage($this->id);
 						unlink($img[0]);
-						if($img[1] == 1) {
-							$img[1] = 2;
-						} else {
-							$img[1] = 1;
-						}
+						($img[1] == 1)
+						? $img[1] = 2
+						: $img[1] = 1;
 						$this->misc->saveUploadedFile($this->id.$img[1].'.'.$fileType, 'uploadFile', './images/users/');
 					}
 
 					// Save user data
 					$arrayValues = array();
 					$arrayValues['Username'] = $username;
-					$this->db->updateDatabase('users', 'user_ID', $this->id, $arrayValues);
+					$this->db->updateDatabase('users', 'userId', $this->id, $arrayValues);
 
 					$_SESSION['Username'] = $username;
 					return true;
 				}
-			}
-			else {
+			} else {
 				echo 'Username already exists';
 			}
 		}
@@ -235,7 +215,7 @@ class User {
 
 	// Logout
 	public function logout() {
-		setcookie('user_ID', $this->id, time() - 3600, '/', '', FALSE, TRUE);
+		setcookie('userId', $this->id, time() - 3600, '/', '', FALSE, TRUE);
 		setcookie('Username', $this->id, time() - 3600, '/', '', FALSE, TRUE);
 		setcookie('Password', $this->id, time() - 3600, '/', '', FALSE, TRUE);
 		session_destroy();
@@ -243,18 +223,15 @@ class User {
 
 	// Password confirm
 	public function passConfirm() {
-		$sth = $this->db->selectDatabase('password_confirm', 'user_ID', $this->id);
+		$sth = $this->db->selectDatabase('password_confirm', 'userId', $this->id);
 		$randNmb = rand(100000, 99999999);
 		$arrayValues = array();
-		$arrayValues['user_ID'] = $this->id;
+		$arrayValues['userId'] = $this->id;
 		$arrayValues['randNmb'] = $randNmb;
 		$arrayValues['insertDate'] = time();
-		if($sth->fetch()) {
-			$this->db->updateDatabase('password_confirm', 'user_ID', $this->id, $arrayValues);
-		}
-		else {
-			$this->db->insertDatabase('password_confirm', $arrayValues);
-		}
+		($sth->fetch())
+		? $this->db->updateDatabase('password_confirm', 'userId', $this->id, $arrayValues)
+		: $this->db->insertDatabase('password_confirm', $arrayValues);
 
 		// Send mail
 		$msg = 'Visit this link to create your new password.<br/>passwordConfirm&randNmb='.$randNmb;
@@ -267,12 +244,11 @@ class User {
 		if($password != $passwordConfirm) {
 			echo 'Your passwords do not match.<br/>';
 			return false;
-		}
-		else {
+		} else {
 			$arrayValues = array();
 			$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 			$arrayValues['Password'] = $hashedPassword;
-			$this->db->updateDatabase('users', 'user_ID', $this->id, $arrayValues);
+			$this->db->updateDatabase('users', 'userId', $this->id, $arrayValues);
 			return true;
 		}
 	}

@@ -30,6 +30,7 @@ final class Misc {
 
 	// Upload image
 	function saveUploadedFile($imgName, $varName, $directoryImagePath) {
+		// Note: This function has been copied from the internet and I do not claim credit for it
 		if(isset($_FILES[$varName])) {
 			$file = $_FILES[$varName];
 			/* first test only to block more than one extension file */
@@ -74,7 +75,7 @@ final class Misc {
 						/* imagecreate* failed, the image is not good */
 						return -5;
 					} else {
-						/** 
+						/**
 						* valid image, good mime type
 						* destination is writable ?
 						*/
