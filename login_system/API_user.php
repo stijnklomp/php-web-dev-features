@@ -23,54 +23,46 @@ if(in_array($domain, $certifiedWebsites)) {
 				$skipChk = 1;
 				$userID = $_REQUEST['userID'];
 				$username = $_REQUEST['username'];
-				if(isset($_REQUEST['password'])) {
-					$password = $_REQUEST['password'];
-				} else {
-					$password = $_REQUEST['passwordHash'];
-				}
+				(isset($_REQUEST['password']))
+				? $password = $_REQUEST['password']
+				: $password = $_REQUEST['passwordHash'];
 			} else {
 				// UserID and password
 				$skipChk = 2;
 				$userID = $_REQUEST['userID'];
 				$username = NULL;
-				if(isset($_REQUEST['password'])) {
-					$password = $_REQUEST['password'];
-				} else {
-					$password = $_REQUEST['passwordHash'];
-				}
+				(isset($_REQUEST['password']))
+				? $password = $_REQUEST['password']
+				: $password = $_REQUEST['passwordHash'];
 			}
 		} else {
 			// Username and password
 			$skipChk = 3;
 			$userID = NULL;
 			$username = $_REQUEST['username'];
-			if(isset($_REQUEST['password'])) {
-				$password = $_REQUEST['password'];
-			} else {
-				$password = $_REQUEST['passwordHash'];
-			}
+			(isset($_REQUEST['password']))
+			? $password = $_REQUEST['password']
+			: $password = $_REQUEST['passwordHash'];
 		}
 
 		// Parsed values check
 		$errChk = true;
 		function errMsgCheck($errChk, $msg) {
-			if(empty($errMsg)) {
-				$errMsg = $msg;
-			} else {
-				$errMsg .= ' | '.$msg;
-			}
+			(empty($errMsg))
+			? $errMsg = $msg
+			: $errMsg .= ' | '.$msg;
 			return $msg;
 		}
 		if($skipChk == 1) {
 			if(empty($userID) && empty($username)) {
 				$errChk = false;
-				$errMsg = 'The given userID and username are empty';
+				$errMsg = 'The given user id and username are empty';
 			}
 		}
 		if($skipChk == 2) {
 			if(empty($userID)) {
 				$errChk = false;
-				$errMsg = errMsgCheck($errChk, 'The given userID is empty');
+				$errMsg = errMsgCheck($errChk, 'The given user id is empty');
 			}
 		}
 		if($skipChk == 3) {
@@ -93,8 +85,8 @@ if(in_array($domain, $certifiedWebsites)) {
 		if($errChk) {
 			if($skipChk != 2) {
 				$sth = $db->selectDatabase('users', 'Username', $username);
-				if($row = $sth->fetch()) {
-					$userID = $row['user_ID'];
+				if($rows = $sth->fetch()) {
+					$userID = $rows['user_ID'];
 				} elseif($skipChk == 1) {
 					$userID = $userID;
 				} else {
@@ -124,23 +116,9 @@ if(in_array($domain, $certifiedWebsites)) {
 						if(!empty($user->image)) {
 							$user->image = 'http://website.com/'.$user->image;
 						}
-						// Check if user allows the display of their email and Discord name
-						if($user->emailPrivacy == 1) {
-							$user->email = 'Confidential';
-						}
-						if($user->discordNamePrivacy == 1) {
-							$user->discordName = 'Confidential';
-						}
-						// Change timezone to a readable string
-						$timezones = array(0=>'-', 1=>'-12:00', 2=>'-11:00', 3=>'-10:00', 4=>'-09:30', 5=>'-09:00', 6=>'-08:00', 7=>'-07:00', 8=>'-06:00', 9=>'-05:00', 10=>'-04:00', 11=>'-03:30', 12=>'-03:00', 13=>'-02:00', 14=>'-01:00', 15=>'+00:00', 16=>'+01:00', 17=>'+02:00', 18=>'+03:00', 19=>'+03:30', 20=>'+04:00', 21=>'+04:30', 22=>'+05:00', 23=>'+05:30', 24=>'+05:45', 25=>'+06:00', 26=>'+06:30', 27=>'+07:00', 28=>'+08:00', 29=>'+08:45', 30=>'+09:00', 31=>'+09:30', 32=>'+10:00', 33=>'+10:30', 34=>'+11:00', 35=>'+12:00', 36=>'+12:45', 37=>'+13:00', 38=>'+14:00');
-						$user->timezone = 'GTM'.$timezones[$user->timezone];
-						// Remove object attributes
-						unset($user->emailPrivacy);
-						unset($user->discordNamePrivacy);
 						// Return object
 						$userArray['progress'] = true;
-						foreach($user as $key => $value)
-						{
+						foreach($user as $key => $value) {
 							$userArray[$key] = $value;
 						}
 					} else {
@@ -179,13 +157,6 @@ if(in_array($domain, $certifiedWebsites)) {
 					return 'Email';
 					break;
 				case 4:
-				case 'discordname':
-					return 'Discordname';
-				case 5:
-				case 'timezone':
-					return 'Timezone';
-					break;
-				case 6:
 				case 'permission':
 					return 'Permission';
 					break;
@@ -219,20 +190,20 @@ if(in_array($domain, $certifiedWebsites)) {
 				$count++;
 			}
 		}
-		if($i > 1) {
+		if($i > 2) {
 			$query .= ' AND `Satus` <> 0';
 		} else {
 			$query = ' WHERE `Status` <> 0';
 		}
 		// Add order by to query
+		// 1 = ASC
+		// 2 = DESC
 		if(isset($_REQUEST['orderbyKey'])) {
 			$orderByKey = switchStatementCheck($_REQUEST['orderbyKey']);
 			if($orderByKey) {
 				$orderByValue = 'DESC';
 				if(isset($_REQUEST['orderbyValue'])) {
 					if($_REQUEST['orderbyValue'] == 1) {
-						$orderByValue = 'DESC';
-					} elseif($_REQUEST['orderbyValue'] == 2) {
 						$orderByValue = 'ASC';
 					}
 				}
@@ -247,35 +218,21 @@ if(in_array($domain, $certifiedWebsites)) {
 		$sth = $db->conn->prepare('SELECT * FROM `users`'.$query);
 		$sth->execute($parameters);
 		$userArray['progress'] = true;
-		while($row = $sth->fetch()) {
-			$user->getUserByID($row['user_ID']);
+		while($rows = $sth->fetch()) {
+			$user->getUserByID($rows['user_ID']);
 			// Image
-			$img = $misc->findProfileImage($row['user_ID']);
-			if(!empty($img[0])) {
-				$user->image = 'http://website.com/'.$img[0];
-			} else {
-				$user->image = '';
-			}
-			// Check if user allows the display of their email and Discord name
-			if($user->emailPrivacy == 1) {
-				$user->email = 'Confidential';
-			}
-			if($user->discordNamePrivacy == 1) {
-				$user->discordName = 'Confidential';
-			}
-			foreach($user as $key => $value)
-			{
+			$img = $misc->findProfileImage($rows['user_ID']);
+			$user->image = (!empty($img[0]))
+			? 'http://website.com/'.$img[0]
+			: $user->image = '';
+			foreach($user as $key => $value) {
 				switch($key) {
 					// Parsed object attributes
 					case 'id':
 					case 'username':
 					case 'email':
-					case 'discordName':
-					case 'image':
 					case 'permission':
-					case 'gameName':
-					case 'handleName':
-					case 'ships':
+					case 'image':
 						$userArray[$key][$rows] = $value;
 						break;
 				}
@@ -287,8 +244,8 @@ if(in_array($domain, $certifiedWebsites)) {
 		$userArray['displayedRows'] = $rows;
 		$sth = $db->conn->prepare('SELECT COUNT(*) FROM `users`'.$query);
 		$sth->execute($parameters);
-		$row = $sth->fetch();
-		$userArray['totalRows'] = $row[0];
+		$rows = $sth->fetch();
+		$userArray['totalRows'] = $rows[0];
 	}
 	unset($db, $user);
 } else {
