@@ -10,13 +10,26 @@
   border: 1px solid black;
 }
 
-.line-diagram-point{
+.line-chart-background{
   background-color: grey;
 }
 
-.line-diagram-line{
+.line-chart-point{
+  background-color: #4e6991;
+  border-radius: 50%;
+}
+
+.line-chart-line{
   stroke-width: 2px !important;
   stroke: rgb(0, 0, 0) !important;
+}
+
+.line-chart-section:hover .line-chart-line{
+  stroke: rgb(63, 180, 193) !important;
+}
+
+.line-chart-section:hover .line-chart-background{
+  opacity: 0.5;
 }
 </style>
 
@@ -56,18 +69,27 @@ $lineChartPointHeight = 10;
     <?php
     for($i = 0; $i < count($lineChartTotalPoints); $i++) {
       ?>
-      <div class="line-diagram-point" style="top: calc(<?= (100 - $lineChartTotalPoints[$i][0]); ?>% - 5px);left: <?= (($i / (count($lineChartTotalPoints) - 1)) * 100); ?>%;"></div>
+      <div class="line-chart-point" style="top: calc(<?= (100 - $lineChartTotalPoints[$i][0]); ?>% - 5px);left: <?= (($i / (count($lineChartTotalPoints) - 1)) * 100); ?>%;"></div>
       <?php
       if(($i + 1) < count($lineChartTotalPoints)) {
           ?>
-          <svg class="svg">
-            <line class="line-diagram-line" x2="calc(<?= (($i / (count($lineChartTotalPoints) - 1)) * 100); ?>% + <?= ($lineChartPointWidth / 2); ?>px)" y1="<?= (100 - $lineChartTotalPoints[($i + 1)][0]); ?>%" x1="calc(<?= ((($i + 1) / (count($lineChartTotalPoints) - 1)) * 100); ?>% + <?= ($lineChartPointWidth / 2); ?>px)" y2="<?= (100 - $lineChartTotalPoints[$i][0]); ?>%">
-          </svg>
+          <div class="line-chart-section">
+            <svg class="line-chart-svg">
+              <line class="line-chart-line" x2="calc(<?= (($i / (count($lineChartTotalPoints) - 1)) * 100); ?>% + <?= ($lineChartPointWidth / 2); ?>px)" y1="<?= (100 - $lineChartTotalPoints[($i + 1)][0]); ?>%" x1="calc(<?= ((($i + 1) / (count($lineChartTotalPoints) - 1)) * 100); ?>% + <?= ($lineChartPointWidth / 2); ?>px)" y2="<?= (100 - $lineChartTotalPoints[$i][0]); ?>%">
+            </svg>
+            <div class="line-chart-background" style="width: calc(<?= (((($i + 1) / (count($lineChartTotalPoints) - 1)) * 100) - (($i / (count($lineChartTotalPoints) - 1)) * 100)); ?>% + <?= ($lineChartPointWidth / 2); ?>px);left: calc(<?= (($i / (count($lineChartTotalPoints) - 1)) * 100); ?>% + <?= ($lineChartPointWidth / 4); ?>px);"></div>
+          </div>
           <?php
       }
     }
     ?>
   </div>
+  <script>
+  // Check for browser support
+  if(!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")) {
+    document.getElementById('line-chart').innerHTML = 'Your browser does not support SVG';
+  }
+  </script>
 </div>
 <style>
 #line-chart{
@@ -80,18 +102,26 @@ $lineChartPointHeight = 10;
   margin-bottom: <?= ($lineChartPointWidth / 2); ?>px;
 }
 
-.svg{
+.line-chart-background{
+  position: absolute;
+  height: calc(100% + <?= $lineChartPointWidth; ?>px);
+  top: -<?= ($lineChartPointWidth / 2); ?>px;
+  opacity: 0;
+  z-index: 1;
+}
+
+.line-chart-svg{
   position: absolute;
   width: 100%;
   height: 100%;
 }
 
-.line-diagram-line{
+.line-chart-line{
   stroke-width: 1px;
   stroke: rgb(0, 0, 0);
 }
 
-.line-diagram-point{
+.line-chart-point{
   position: absolute;
   width: <?= $lineChartPointWidth; ?>px;
   height: <?= $lineChartPointHeight; ?>px;
