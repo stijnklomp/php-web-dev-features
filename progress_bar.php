@@ -30,30 +30,22 @@ $timelineBackgroundColorIcons = '#619CB0';
 $timelineColorIcons = '#619CB0';
 // ////////////////////////////////////////////////////////////// -->
 
-if($timelineBoxSize > 55 || !is_int($timelineBoxSize))
-{
+if($timelineBoxSize > 55 || !is_int($timelineBoxSize)) {
 	$timelineBoxSize = 55;
 }
-if(empty($currentPage))
-{
+if(empty($currentPage)) {
 	$currentPage = 1;
 }
-if($currentPage > count($totalPages))
-{
+if($currentPage > count($totalPages)) {
 	$currentPage = count($totalPages);
 }
-if(empty($previousPage))
-{
+if(empty($previousPage)) {
 	$previousPage = count($totalPages);
 }
-function checkTimeline($previousPage, $currentPage)
-{
-	if(empty($previousPage) || $previousPage >= $currentPage || $previousPage < 1)
-	{
+function checkTimeline($previousPage, $currentPage) {
+	if(empty($previousPage) || $previousPage >= $currentPage || $previousPage < 1) {
 		return true;
-	}
-	else
-	{
+	} else {
 		return false;
 	}
 }
@@ -61,30 +53,22 @@ function checkTimeline($previousPage, $currentPage)
 <div id="timeline">
 	<div id="timelineBox">
 		<?php
-		if($currentPage > 1)
-		{
+		if($currentPage > 1) {
 			?><div id="timelineBackground" style="width: <?php
-			if(checkTimeline($previousPage, $currentPage))
-			{
+			if(checkTimeline($previousPage, $currentPage)) {
 				echo (100 / (count($totalPages) - 1)) * ($currentPage - 1).'%;"></div>';
-			}
-			else
-			{
+			} else {
 				echo (100 / (count($totalPages) - 1)) * ($previousPage - 1).'%;"></div>';
 				echo '<script>setTimeout(function(){document.getElementById("timelineBackground").style.cssText = "width: '.(100 / (count($totalPages) - 1)) * ($currentPage - 1).'%;";}, 1);</script>';
 			}
 		}
-		if(!checkTimeline($previousPage, $currentPage))
-		{
+		if(!checkTimeline($previousPage, $currentPage)) {
 			$j = 0;
 		}
-		for($i=1; $i<count($totalPages) + 1; $i++)
-		{
+		for($i=1; $i<count($totalPages) + 1; $i++) {
 			$position = (100 / (count($totalPages) - 1)) * ($i - 1);
-			if(!checkTimeline($previousPage, $currentPage))
-			{
-				if($i < $currentPage && $i > $previousPage)
-				{
+			if(!checkTimeline($previousPage, $currentPage)) {
+				if($i < $currentPage && $i > $previousPage) {
 					$j++;
 					?>
 					<script>
@@ -98,13 +82,11 @@ function checkTimeline($previousPage, $currentPage)
 			?>
 			<div class="point" style="<?php if($i > 1){echo 'left: calc('.$position.'% - 36px);';if($i < $currentPage){if(!checkTimeline($previousPage, $currentPage) && $i > $previousPage){echo 'background-color: '.$timelineBackgroundColorBarStandard.';';}else{echo 'background-color: '.$timelineBackgroundColorIcons.';';}}if(($i == count($totalPages) && $currentPage == $i) && (checkTimeline($previousPage, $currentPage) && $i < $previousPage)){echo 'background-color: '.$timelineBackgroundColorIcons.';';}elseif($i > $currentPage || ($i == count($totalPages) && $previousPage <= $currentPage)){if(($previousPage == $currentPage) && $i == $currentPage){echo 'background-color: '.$timelineBackgroundColorIcons.';';}else{echo 'background-color: '.$timelineBackgroundColorBarStandard.';';}}}else{echo 'background-color: '.$timelineBackgroundColorIcons.';left: -35px;';} ?>">
 				<?php
-				if($i == $currentPage && $i > 1 && $i != count($totalPages))
-				{
+				if($i == $currentPage && $i > 1 && $i != count($totalPages)) {
 					?>
 					<div id="pointHalfBackgroundLeft"></div>
 					<?php
-					if(!checkTimeline($previousPage, $currentPage))
-					{
+					if(!checkTimeline($previousPage, $currentPage)) {
 						?>
 						<div id="pointHalfBackgroundLeftAnimation"></div>
 						<?php
@@ -118,10 +100,8 @@ function checkTimeline($previousPage, $currentPage)
 			</div>
 			<?php
 		}
-		if(!checkTimeline($previousPage, $currentPage))
-		{
-			if(($currentPage == count($totalPages)) && $previousPage < $currentPage)
-			{
+		if(!checkTimeline($previousPage, $currentPage)) {
+			if(($currentPage == count($totalPages)) && $previousPage < $currentPage) {
 				?>
 				<script>
 				setTimeout(function(){
@@ -129,9 +109,7 @@ function checkTimeline($previousPage, $currentPage)
 				}, 1850);
 				</script>
 				<?php
-			}
-			else
-			{
+			} else {
 				?>
 				<script>
 				setTimeout(function(){
@@ -162,8 +140,7 @@ function checkTimeline($previousPage, $currentPage)
 	height: 100%;
 	border-radius: 30px;
 	<?php
-	if(!empty($previousPage) && $previousPage < $currentPage && $previousPage > 0)
-	{
+	if(!empty($previousPage) && $previousPage < $currentPage && $previousPage > 0) {
 		?>width: <?= (100 / (count($totalPages) - 1)) * ($previousPage - 1); ?>%;<?php
 	}
 	?>
@@ -187,12 +164,9 @@ function checkTimeline($previousPage, $currentPage)
 #pointHalfBackgroundLeft:before, #pointHalfBackgroundLeftAnimation:before{
 	content: "";
 	<?php
-	if(!checkTimeline($previousPage, $currentPage))
-	{
+	if(!checkTimeline($previousPage, $currentPage)) {
 		?>background-color: <?= $timelineBackgroundColorBarStandard; ?>;border: 1px solid <?= $timelineBackgroundColorBarStandard; ?>;<?php
-	}
-	else
-	{
+	} else {
 		?>background-color: <?= $timelineBackgroundColorBarChanged; ?>;border: 1px solid <?= $timelineBackgroundColorBarChanged; ?>;<?php
 	}
 	?>
